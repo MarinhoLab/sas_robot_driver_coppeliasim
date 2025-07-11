@@ -26,7 +26,7 @@
 #include <sas_common/sas_common.hpp>
 #include <sas_core/eigen3_std_conversions.hpp>
 #include <sas_robot_driver/sas_robot_driver_ros.hpp>
-#include <sas_robot_driver_myrobot/sas_robot_driver_myrobot.hpp>
+#include <sas_robot_driver_coppeliasim/sas_robot_driver_coppeliasim.hpp>
 #include <dqrobotics/utils/DQ_Math.h>
 
 /*********************************************
@@ -54,29 +54,32 @@ int main(int argc, char** argv)
     {
         RCLCPP_INFO_STREAM_ONCE(node->get_logger(), "::Loading parameters from parameter server.");
 
-        sas::RobotDriverMyrobotConfiguration configuration;
+        sas::RobotDriverCoppeliaSimConfiguration configuration;
 
-        sas::get_ros_parameter(node,"ip",configuration.ip);
         std::vector<double> joint_limits_min;
         std::vector<double> joint_limits_max;
         sas::get_ros_parameter(node,"joint_limits_min",joint_limits_min);
         sas::get_ros_parameter(node,"joint_limits_max",joint_limits_max);
-        configuration.joint_limits = {deg2rad(sas::std_vector_double_to_vectorxd(joint_limits_min)),
-                                      deg2rad(sas::std_vector_double_to_vectorxd(joint_limits_max))};
+        // configuration.joint_limits = {deg2rad(sas::std_vector_double_to_vectorxd(joint_limits_min)),
+        //                              deg2rad(sas::std_vector_double_to_vectorxd(joint_limits_max))};
+
+        sas::get_ros_parameter(node,"robot_joint_names",configuration.robot_joint_names);
+        sas::get_ros_optional_parameter(node,"ip",configuration.ip, std::string("127.0.0.1"));
+        sas::get_ros_optional_parameter(node,"port",configuration.port, 23000);
+        sas::get_ros_optional_parameter(node, "timeout", configuration.timeout, 1000);
+        RCLCPP_INFO_STREAM_ONCE(node->get_logger(), "::Parameters OK.");
+
+        RCLCPP_INFO_STREAM_ONCE(node->get_logger(), "::Instantiating RobotDriverMyRobot.");
+        auto robot_driver_coppeliasim = std::make_shared<sas::RobotDriverCoppeliaSim>(configuration,
+                                                                                      &kill_this_process);
 
         sas::RobotDriverROSConfiguration robot_driver_ros_configuration;
         sas::get_ros_parameter(node,"thread_sampling_time_sec",robot_driver_ros_configuration.thread_sampling_time_sec);
         robot_driver_ros_configuration.robot_driver_provider_prefix = node->get_name();
 
-        RCLCPP_INFO_STREAM_ONCE(node->get_logger(), "::Parameters OK.");
-
-        RCLCPP_INFO_STREAM_ONCE(node->get_logger(), "::Instantiating RobotDriverMyRobot.");
-        auto robot_driver_myrobot = std::make_shared<sas::RobotDriverMyrobot>(configuration,
-                                                                    &kill_this_process);
-
         RCLCPP_INFO_STREAM_ONCE(node->get_logger(), "::Instantiating RobotDriverROS.");
         sas::RobotDriverROS robot_driver_ros(node,
-                                             robot_driver_myrobot,
+                                             robot_driver_coppeliasim,
                                              robot_driver_ros_configuration,
                                              &kill_this_process);
         robot_driver_ros.control_loop();
@@ -89,3 +92,4 @@ int main(int argc, char** argv)
 
     return 0;
 }
+

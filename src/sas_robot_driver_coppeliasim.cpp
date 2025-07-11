@@ -24,41 +24,22 @@
 # ################################################################*/
 
 
-#include "sas_robot_driver_myrobot/sas_robot_driver_myrobot.hpp"
-#include <iostream>
-#include <memory>
+#include "sas_robot_driver_coppeliasim/sas_robot_driver_coppeliasim.hpp"
+#include <dqrobotics/utils/DQ_Constants.h>
 #include <sas_core/eigen3_std_conversions.hpp>
 
 namespace sas
 {
 
 
-class RobotDriverMyrobot::Impl
-{
-
-public:
-    bool connected{false};
-    bool motor_on{false};
-
-    VectorXd joint_positions_;
-
-
-    Impl()
-        {
-
-        }
-
-};
-
-RobotDriverMyrobot::RobotDriverMyrobot(const RobotDriverMyrobotConfiguration& configuration, std::atomic_bool* break_loops):
+RobotDriverCoppeliaSim::RobotDriverCoppeliaSim(const RobotDriverCoppeliaSimConfiguration &configuration, std::atomic_bool* break_loops):
     RobotDriver(break_loops),
     configuration_(configuration)
 {
-    joint_limits_ = configuration.joint_limits; //for the superclass
-    impl_ = std::make_unique<RobotDriverMyrobot::Impl>();
+    csi_ = std::make_shared<DQ_CoppeliaSimInterfaceZMQ>();
 }
 
-RobotDriverMyrobot::~RobotDriverMyrobot()
+RobotDriverCoppeliaSim::~RobotDriverCoppeliaSim()
 {
 
 }
@@ -73,87 +54,74 @@ RobotDriverMyrobot::~RobotDriverMyrobot()
  *
  * @return a VectorXd representing the configuration space in radians.
  */
-VectorXd RobotDriverMyrobot::get_joint_positions()
+VectorXd RobotDriverCoppeliaSim::get_joint_positions()
 {
-    if(impl_->joint_positions_.size()==0)
-        throw std::runtime_error("Tried to obtain invalid joint positions");
-
-    return impl_->joint_positions_;
+    return csi_->get_joint_positions(configuration_.robot_joint_names);
 }
 
 /**
- * @brief RobotDriverMyrobot::set_target_joint_positions
- * This method expects the desired joint positions in radians. The most basic
- * check is for the correct
+ * @brief RobotDriverCoppeliaSim::set_target_joint_positions
+ * Sets the joint positions and the target joint positions of the joints given in the configuration file.
  *
  * @param desired_joint_positions_rad
  */
-void RobotDriverMyrobot::set_target_joint_positions(const VectorXd &desired_joint_positions_rad)
+void RobotDriverCoppeliaSim::set_target_joint_positions(const VectorXd &desired_joint_positions_rad)
 {
-    if(desired_joint_positions_rad.size() != 6)
-        throw std::runtime_error("Incorrect vector size in RobotDriverMyrobot::set_target_joint_positions");
-
-    impl_->joint_positions_ = desired_joint_positions_rad;
+    csi_->set_joint_positions(configuration_.robot_joint_names, desired_joint_positions_rad);
+    csi_->set_joint_target_positions(configuration_.robot_joint_names, desired_joint_positions_rad);
 }
 
 /**
- * @brief RobotDriverMyrobot::connect
+ * @brief RobotDriverCoppeliaSim::connect
  *
- * Usually this method will connect to a given ip address. It is also common
- * for this part of the code to stop running programs or turn the robot off.
- * This function is expected to throw an exception of something goes wrong.
- * For instance, if the connection is not established an exception MUST
- * be thrown.
+ * Connect to CoppeliaSim with the necessary information given in the configuration file.
  */
-void RobotDriverMyrobot::connect()
+void RobotDriverCoppeliaSim::connect()
 {
-    //An example of exception to throw.
-    if(impl_->connected)
-        throw std::runtime_error("Already connected.");
-
-    impl_->connected = true;
-
-    impl_->motor_on = false;
-
-    //Usually after the connection is established we can read joint positions
-    //but not all drivers work like this
-    impl_->joint_positions_ = (VectorXd(6) << 0, 0, 0, 0, 0, 0).finished();
+    if(!csi_->connect(configuration_.ip,
+                       configuration_.port,
+                       configuration_.timeout))
+    {
+        throw std::runtime_error("::Unable to connect to CoppeliaSim.");
+    }
 }
 
 /**
- * @brief RobotDriverMyrobot::initialize
+ * @brief RobotDriverCoppeliaSim::initialize
  *
- * This method is expected to turn the robot on and initialize the internal joint control loop.
- * If there are any issues, this MUST throw an exception so that the program will finish
- * cleanly.
- *
- * After this method finishes target joint states can be received.
+ * Gets the initial joint positions state. This will guarantee that future requests make sense as long
+ * as connection is still alive.
  */
-void RobotDriverMyrobot::initialize()
+void RobotDriverCoppeliaSim::initialize()
 {
-    impl_->motor_on = true;
-
-
+    csi_->get_joint_positions(configuration_.robot_joint_names);
 }
 
 /**
- * @brief RobotDriverMyrobot::deinitialize.
- * For safety reasons, this MUST NOT throw exceptions.
+ * @brief RobotDriverCoppeliaSim::deinitialize.
+ * Nothing to do.
  */
-void RobotDriverMyrobot::deinitialize()
+void RobotDriverCoppeliaSim::deinitialize()
 {
-    impl_->motor_on = false;
-
+    //Nothing to do.
 }
 
 /**
- * @brief RobotDriverMyrobot::disconnect
- * For safety reasons, this MUST NOT throw exceptions.
+ * @brief RobotDriverCoppeliaSim::disconnect
+ * Disconnects from CoppeliaSim.
  */
-void RobotDriverMyrobot::disconnect()
+void RobotDriverCoppeliaSim::disconnect()
 {
-    impl_->connected = false;
-    impl_->joint_positions_ = VectorXd();
+    //Nothing to do
+}
+
+std::tuple<VectorXd, VectorXd> RobotDriverCoppeliaSim::get_joint_limits()
+{
+    //TODO: Obtain the joint limits from the simulator. This does not seem to be trivial as of now.
+    int dof = get_joint_positions().size();
+    auto joint_positions_max = VectorXd::Ones(dof)*2*pi;
+    auto joint_positions_min = -joint_positions_max;
+    return {joint_positions_min, joint_positions_max};
 }
 
 }
