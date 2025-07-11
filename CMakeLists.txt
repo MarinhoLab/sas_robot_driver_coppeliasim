@@ -20,10 +20,10 @@ find_package(sas_robot_driver REQUIRED)
 # The most common use case is to merge everything you need to export
 # into the same shared library called ${PROJECT_NAME}.
 add_library(${PROJECT_NAME} SHARED
-    src/sas_robot_driver_myrobot.cpp
+    src/${PROJECT_NAME}.cpp
 )
 
-ament_target_dependencies(${PROJECT_NAME}
+ament_target_dependencies(${PROJECT_NAME} PUBLIC
     sas_core
     sas_common
     sas_robot_driver
@@ -46,6 +46,11 @@ ament_export_dependencies(
     sas_robot_driver
 
     )
+
+target_link_libraries(${PROJECT_NAME} PUBLIC
+    dqrobotics
+    dqrobotics-interface-coppeliasim-zmq
+)
 
 install(
     DIRECTORY include/
