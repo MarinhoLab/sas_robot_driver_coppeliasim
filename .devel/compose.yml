@@ -1,0 +1,9 @@
+services:
+  sas_robot_driver_coppeliasim:
+    image: murilomarinho/sas:jazzy
+    volumes:
+      - ../../:/root/sas_tutorial_workspace/src/sas_robot_driver_coppeliasim/
+    command: /bin/bash -c "
+      sudo apt-get remove -y ros-jazzy-sas-robot-driver-coppeliasim
+      && cd /root/sas_tutorial_workspace/src/
+      && colcon build"
