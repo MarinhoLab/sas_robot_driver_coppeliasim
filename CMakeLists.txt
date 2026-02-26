@@ -13,6 +13,9 @@ find_package(sas_core REQUIRED)
 find_package(sas_common REQUIRED)
 find_package(sas_robot_driver REQUIRED)
 
+# Python library
+ament_python_install_package(${PROJECT_NAME})
+
 ####################################
 # CPP Shared Library Block [BEGIN] #
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv #
