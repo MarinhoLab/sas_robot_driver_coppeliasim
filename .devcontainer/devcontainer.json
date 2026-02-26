@@ -1,0 +1,6 @@
+{
+    "name": "sas devel",
+    "dockerComposeFile": "compose.yml",
+    "service": "sas_robot_driver_coppeliasim",
+    "workspaceFolder": "/root/sas_tutorial_workspace/",
+}
