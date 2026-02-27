@@ -4,7 +4,8 @@ services:
       dockerfile: Dockerfile_view
     stop_signal: SIGINT
     environment:
-      DISPLAY: $DISPLAY # x server related
+      - DISPLAY
+      - ROS_DOMAIN_ID
     privileged: true # Needed for some gpu configurations.
     volumes:
       - ../../:/root/sas_tutorial_workspace/src/
@@ -14,6 +15,8 @@ services:
     command: /bin/bash -c "
       cd /root/sas_tutorial_workspace/src/
       && tree .
+      && cat /root/.CoppeliaSim/usrset.txt
+      && rm -rf build/ install/ log/
       && colcon build --packages-select sas_robot_driver_coppeliasim
       && source install/setup.bash
       && cd "$$COPPELIASIM_PATH"
