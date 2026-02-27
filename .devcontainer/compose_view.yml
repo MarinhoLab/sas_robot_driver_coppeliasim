@@ -1,0 +1,23 @@
+services:
+  coppeliasim:
+    build:
+      dockerfile: Dockerfile_view
+    stop_signal: SIGINT
+    environment:
+      DISPLAY: $DISPLAY # x server related
+    privileged: true # Needed for some gpu configurations.
+    volumes:
+      - ../../:/root/sas_tutorial_workspace/src/
+      - /tmp/.X11-unix:/tmp/.X11-unix # x server related
+      - ~/.Xauthority:/root/.Xauthority # x server related
+    network_mode: "host" # x server related
+    command: /bin/bash -c "
+      cd /root/sas_tutorial_workspace/src/
+      && tree .
+      && colcon build --packages-select sas_robot_driver_coppeliasim
+      && source install/setup.bash
+      && cd "$$COPPELIASIM_PATH"
+      && [ -f /root/sas_tutorial_workspace/src/sas_robot_driver_coppeliasim/SampleCommunicationScene.ttt ] 
+      && ./coppeliaSim.sh \
+      -s0 \
+      /root/sas_tutorial_workspace/src/sas_robot_driver_coppeliasim/SampleCommunicationScene.ttt"
