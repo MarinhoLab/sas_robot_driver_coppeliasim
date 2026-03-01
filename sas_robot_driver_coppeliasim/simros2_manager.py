@@ -15,7 +15,7 @@ class SimROS2Manager:
         """
         try:
             if self.node is None:
-                rclpy.init()
+                rclpy.init(args=None)
                 rclcpp_init()
                 self.rclcpp_node = rclcpp_Node("sas_simros2_cpp_node")
                 self.node = SimROS2Node(self.rclcpp_node)
@@ -25,13 +25,13 @@ class SimROS2Manager:
             print(f"Error initializing ROS 2: {e}")
 
     def sys_call_actuation(self):
+        pass
 
+
+    def sys_call_sensing(self):
         if self.node is not None:
             rclpy.spin_once(self.node, timeout_sec=0.0)
             rclcpp_spin_some(self.rclcpp_node)
-
-    def sys_call_sensing(self):
-        pass
 
     def sys_call_cleanup(self):
         if self.node is not None:
