@@ -1,3 +1,4 @@
 from sas_robot_driver_coppeliasim.simros2_manager import SimROS2Manager
 from sas_robot_driver_coppeliasim.simros2_node import SimROS2Node
 from sas_robot_driver_coppeliasim.simros2_robot_manager import SimROS2RobotManager
+from sas_robot_driver_coppeliasim.simros2_object_manager import SimROS2ObjectManager

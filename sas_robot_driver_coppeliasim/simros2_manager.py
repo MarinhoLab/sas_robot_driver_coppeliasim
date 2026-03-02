@@ -3,7 +3,7 @@ sas::SimROS2Manager
 
 :seealso: Juan's tutorial.
 """
-
+import time
 import rclpy
 from rclpy.node import Node
 from sas_common import rclcpp_init, rclcpp_Node, rclcpp_spin_some, rclcpp_shutdown
@@ -20,9 +20,10 @@ class SimROS2Manager:
             if self.node is None:
                 rclpy.init(args=None)
                 rclcpp_init()
-                self.rclcpp_node = rclcpp_Node("sas_simros2_cpp_node")
+                timestamp_for_anonymous_name = str(time.time()).replace('.', '_')
+                self.rclcpp_node = rclcpp_Node(f"sas_simros2_{timestamp_for_anonymous_name}_cpp_node")
                 self.node = SimROS2Node(self.rclcpp_node, self.coppeliasim_sim)
-                print("ROS 2 node initialized successfully")
+                print("ROS 2 nodes initialized successfully")
 
         except Exception as e:
             print(f"Error initializing ROS 2: {e}")
