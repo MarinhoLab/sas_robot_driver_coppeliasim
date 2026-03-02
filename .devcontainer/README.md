@@ -1,3 +1,13 @@
+# Testing colcon build
+
+This will test if colcon builds properly and the basic sample script can be executed.
+
+```console
+cd .devcontainer
+docker compose -f compose_colcon.yml build --pull
+docker compose -f compose_colcon.yml up
+```
+
 # Testing network
 
 I could not make the ROS2 communication work over `qemu`. Given that it didn't work, I can only guess why it isn't
