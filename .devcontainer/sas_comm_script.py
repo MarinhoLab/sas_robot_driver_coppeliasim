@@ -1,7 +1,17 @@
-from sas_robot_driver_coppeliasim import SimROS2Manager
+from sas_robot_driver_coppeliasim import SimROS2Manager, SimROS2RobotManager
 
 def sysCall_init():
-    self.sas_manager = SimROS2Manager()
+    self.sim = require('sim')
+    self.sas_manager = SimROS2Manager(self.sim)
+
+    robot_manager_1 = SimROS2RobotManager(name="ur_1",
+                                          joint_names="",
+                                          topic_prefix="ur_1",
+                                          rclcpp_node=self.sas_manager.rclcpp_node,
+                                          sim=self.sim)
+
+    self.sas_manager.add_robot_manager(robot_manager_1)
+
     self.sas_manager.sys_call_init()
 
 def sysCall_actuation():
