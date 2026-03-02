@@ -1,0 +1,33 @@
+services:
+  coppeliasim:
+    build:
+      dockerfile: Dockerfile_view
+    platform: linux/amd64 # No current build for arm64
+    environment:
+      DISPLAY: $DISPLAY
+      ROS_DOMAIN_ID: 0
+      FASTDDS_BUILTIN_TRANSPORTS: UDPv4
+      #FASTRTPS_DEFAULT_PROFILES_FILE: /root/scripts/fastrtps_profile.xml
+    # privileged: true # Needed for some gpu configurations.
+    volumes:
+      - ../../:/root/sas_tutorial_workspace/src/
+      - /tmp/.X11-unix:/tmp/.X11-unix # x server related
+      - ~/.Xauthority:/root/.Xauthority # x server related
+    # network_mode: "host" # x server related
+    command: /bin/bash -c "
+      . /root/scripts/print_environment.sh
+      && ros2 run demo_nodes_cpp talker"
+
+  comm_test:
+    build:
+      dockerfile: Dockerfile_comm_test
+    environment:
+      ROS_DOMAIN_ID: 1
+      FASTDDS_BUILTIN_TRANSPORTS: UDPv4
+      #FASTRTPS_DEFAULT_PROFILES_FILE: /root/scripts/fastrtps_profile.xml
+    # network_mode: "host"
+    command: /bin/bash -c "
+      . /root/scripts/print_environment.sh
+      && ros2 run demo_nodes_cpp talker"
+
+
