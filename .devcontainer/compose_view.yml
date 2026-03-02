@@ -12,25 +12,24 @@ services:
       - ../../:/root/sas_tutorial_workspace/src/
       - /tmp/.X11-unix:/tmp/.X11-unix # x server related
       - ~/.Xauthority:/root/.Xauthority # x server related
-    # network_mode: "host" # x server related
     command: /bin/bash -c "
-      echo 'ROS_DOMAIN_ID=$ROS_DOMAIN_ID'
+      . /root/scripts/print_environment.sh
       && cd /root/sas_tutorial_workspace/src/
       && colcon build --packages-select sas_robot_driver_coppeliasim
       && source install/setup.bash
+      && [ -f /root/sas_tutorial_workspace/src/sas_robot_driver_coppeliasim/SampleCommunicationScene.ttt ]
       && cd "$$COPPELIASIM_PATH"
-      && ./coppeliaSim.sh" #\
-      # && tree .
-      #&& [ -f /root/sas_tutorial_workspace/src/sas_robot_driver_coppeliasim/SampleCommunicationScene.ttt ]
-      #-s0 \
-      #/root/sas_tutorial_workspace/src/sas_robot_driver_coppeliasim/SampleCommunicationScene.ttt"
+      && ./coppeliaSim.sh #\
+      -s0 \
+      /root/sas_tutorial_workspace/src/sas_robot_driver_coppeliasim/SampleCommunicationScene.ttt"
 
   comm_test:
-    image: murilomarinho/sas:jazzy
+    build:
+      dockerfile: Dockerfile_comm_test
     environment:
       - ROS_DOMAIN_ID
     tty: true
     stdin_open: true
     command: /bin/bash -c "
-      echo 'ROS_DOMAIN_ID=$ROS_DOMAIN_ID'
-      && while true; do ros2 topic list; sleep 60; done"
+      . /root/scripts/print_environment.sh
+      && while true; do ros2 topic list; sleep 5; done"

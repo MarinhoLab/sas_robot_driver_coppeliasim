@@ -5,18 +5,11 @@ services:
     platform: linux/amd64 # No current build for arm64
     environment:
       DISPLAY: $DISPLAY
-      ROS_DOMAIN_ID: 1
-      #FASTDDS_BUILTIN_TRANSPORTS: UDPv4
-      #ROS2_EASY_MODE: host.docker.internal
-      #FASTRTPS_DEFAULT_PROFILES_FILE: /root/scripts/fastrtps_profile.xml
-    # privileged: true # Needed for some gpu configurations.
+      ROS_DOMAIN_ID: $ROS_DOMAIN_ID
     volumes:
       - ../../:/root/sas_tutorial_workspace/src/
       - /tmp/.X11-unix:/tmp/.X11-unix # x server related
       - ~/.Xauthority:/root/.Xauthority # x server related
-    # network_mode: "host" # x server related
-    #extra_hosts:
-    #  - "host.docker.internal:host-gateway"
     command: /bin/bash -c "
       . /root/scripts/print_environment.sh
       && ros2 run demo_nodes_cpp talker"
@@ -25,13 +18,7 @@ services:
     build:
       dockerfile: Dockerfile_comm_test
     environment:
-      ROS_DOMAIN_ID: 1
-      #FASTDDS_BUILTIN_TRANSPORTS: UDPv4
-      #ROS2_EASY_MODE: host.docker.internal
-      #FASTRTPS_DEFAULT_PROFILES_FILE: /root/scripts/fastrtps_profile.xml
-    # network_mode: "host"
-    #extra_hosts:
-    #  - "host.docker.internal:host-gateway"
+      ROS_DOMAIN_ID: $ROS_DOMAIN_ID
     command: /bin/bash -c "
       . /root/scripts/print_environment.sh
       && ros2 run demo_nodes_cpp listener"

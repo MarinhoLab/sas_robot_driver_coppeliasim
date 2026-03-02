@@ -35,5 +35,6 @@ class SimROS2Manager:
 
     def sys_call_cleanup(self):
         if self.node is not None:
+            self.node.destroy_node()
             rclpy.shutdown()
             rclcpp_shutdown()
