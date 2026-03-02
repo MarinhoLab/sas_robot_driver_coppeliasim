@@ -2,6 +2,7 @@ services:
   coppeliasim:
     build:
       dockerfile: Dockerfile_view
+    platform: linux/amd64 # No current build for arm64
     stop_signal: SIGINT
     environment:
       - DISPLAY
@@ -11,16 +12,25 @@ services:
       - ../../:/root/sas_tutorial_workspace/src/
       - /tmp/.X11-unix:/tmp/.X11-unix # x server related
       - ~/.Xauthority:/root/.Xauthority # x server related
-    network_mode: "host" # x server related
+    # network_mode: "host" # x server related
     command: /bin/bash -c "
-      cd /root/sas_tutorial_workspace/src/
-      && tree .
-      && cat /root/.CoppeliaSim/usrset.txt
-      && rm -rf build/ install/ log/
+      echo 'ROS_DOMAIN_ID=$ROS_DOMAIN_ID'
+      && cd /root/sas_tutorial_workspace/src/
       && colcon build --packages-select sas_robot_driver_coppeliasim
       && source install/setup.bash
       && cd "$$COPPELIASIM_PATH"
-      && [ -f /root/sas_tutorial_workspace/src/sas_robot_driver_coppeliasim/SampleCommunicationScene.ttt ] 
-      && ./coppeliaSim.sh \
-      -s0 \
-      /root/sas_tutorial_workspace/src/sas_robot_driver_coppeliasim/SampleCommunicationScene.ttt"
+      && ./coppeliaSim.sh" #\
+      # && tree .
+      #&& [ -f /root/sas_tutorial_workspace/src/sas_robot_driver_coppeliasim/SampleCommunicationScene.ttt ]
+      #-s0 \
+      #/root/sas_tutorial_workspace/src/sas_robot_driver_coppeliasim/SampleCommunicationScene.ttt"
+
+  comm_test:
+    image: murilomarinho/sas:jazzy
+    environment:
+      - ROS_DOMAIN_ID
+    tty: true
+    stdin_open: true
+    command: /bin/bash -c "
+      echo 'ROS_DOMAIN_ID=$ROS_DOMAIN_ID'
+      && while true; do ros2 topic list; sleep 60; done"
