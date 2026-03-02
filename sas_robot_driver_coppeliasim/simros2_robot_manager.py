@@ -6,22 +6,31 @@ import numpy as np
 class SimROS2RobotManager:
 
     def __init__(self,
-                 name: str,
-                 joint_names: list[str],
                  topic_prefix: str,
                  rclcpp_node: rclcpp_Node,
-                 sim):
+                 sim,
+                 robot_base_handle: int = None,
+                 joint_names: list[str] = None):
 
-        self.name = name
-        self.joint_names = joint_names
-        self.joint_handles = sim.getObjectsInTree(sim.getObject(name), sim.sceneobject_joint)
+        if robot_base_handle is None and joint_names is None:
+            raise Exception('You must specify a robot_base_handle or joint_names')
+        if robot_base_handle is not None and joint_names is not None:
+            raise Exception('You cannot specify a robot_base_handle or joint_names at the same time.')
+
+        self.robot_base_handle = robot_base_handle
         self.topic_prefix = topic_prefix
         self.rclcpp_node = rclcpp_node
         self.coppeliasim_sim = sim
 
-        self.DOF = len(self.joint_names)
 
-        self.rds = RobotDriverServer(node, self.topic_prefix)
+        if joint_names is None:
+            self.joint_handles = sim.getObjectsInTree(sim.getObject(self.robot_base_handle), sim.sceneobject_joint)
+        else:
+            raise Exception("Not implemented yet.")
+
+        self.DOF = len(self.joint_handles)
+
+        self.rds = RobotDriverServer(rclcpp_node, self.topic_prefix)
         self.q: np.array = np.zeros(self.DOF)
         self.q_min: np.array = np.zeros(self.DOF)
         self.q_max: np.array = np.zeros(self.DOF)
@@ -30,12 +39,12 @@ class SimROS2RobotManager:
         self.q_target: np.array = None
 
     def update(self):
-        for i in self.DOF:
+        for i in range(self.DOF):
             self.q[i] = self.sim.getJointPosition(self.joint_handles[i])
             self.q_dot[i] = self.sim.getJointVelocity(self.joint_handles[i])
             self.q_force[i] = self.sim.getJointForce(self.joint_handles[i])
 
-            cyclic, interval = sim.getJointInterval(self.joint_handles[i])
+            cyclic, interval = self.sim.getJointInterval(self.joint_handles[i])
             if cyclic:
                 self.q_min[i] = -sys.float_info.max
                 self.q_max[i] = sys.float_info.max

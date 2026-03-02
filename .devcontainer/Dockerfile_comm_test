@@ -4,7 +4,3 @@ SHELL ["/bin/bash", "-c"]
 ENV BASH_ENV="/etc/bash_env"
 
 RUN sudo apt-get update && sudo apt-get upgrade -y
-
-COPY print_environment.sh /root/scripts/
-RUN chmod +x /root/scripts/print_environment.sh
-RUN cd "/root/scripts/" && wget https://raw.githubusercontent.com/mmmarinho/ROS2_Tutorial/refs/heads/main/docs/source/docker/fastrtps_profile.xml

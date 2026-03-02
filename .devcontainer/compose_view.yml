@@ -2,26 +2,25 @@ services:
   coppeliasim:
     build:
       dockerfile: Dockerfile_view
-    platform: linux/amd64 # No current build for arm64
     stop_signal: SIGINT
     environment:
       - DISPLAY
       - ROS_DOMAIN_ID
+      - COPPELIA_SIM_SCENE_PATH=/root/sas_tutorial_workspace/src/sas_robot_driver_coppeliasim/SampleCommunicationScene.ttt
     privileged: true # Needed for some gpu configurations.
     volumes:
       - ../../:/root/sas_tutorial_workspace/src/
       - /tmp/.X11-unix:/tmp/.X11-unix # x server related
       - ~/.Xauthority:/root/.Xauthority # x server related
     command: /bin/bash -c "
-      . /root/scripts/print_environment.sh
-      && cd /root/sas_tutorial_workspace/src/
+      cd /root/sas_tutorial_workspace/src/
       && colcon build --packages-select sas_robot_driver_coppeliasim
       && source install/setup.bash
-      && [ -f /root/sas_tutorial_workspace/src/sas_robot_driver_coppeliasim/SampleCommunicationScene.ttt ]
+      && [ -f $$COPPELIA_SIM_SCENE_PATH ]
       && cd "$$COPPELIASIM_PATH"
       && ./coppeliaSim.sh 
       -s0 \
-      /root/sas_tutorial_workspace/src/sas_robot_driver_coppeliasim/SampleCommunicationScene.ttt"
+      $$COPPELIA_SIM_SCENE_PATH"
 
   comm_test:
     build:
@@ -29,5 +28,4 @@ services:
     environment:
       - ROS_DOMAIN_ID
     command: /bin/bash -c "
-      . /root/scripts/print_environment.sh
-      && while true; do ros2 node list; sleep 5; done"
+      while true; do ros2 node list; sleep 5; done"
