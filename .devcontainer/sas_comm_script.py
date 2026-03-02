@@ -5,7 +5,6 @@ def sysCall_init():
     self.sas_manager = SimROS2Manager(self.sim)
 
     robot_manager_1 = SimROS2RobotManager(name="ur_1",
-                                          joint_names="",
                                           topic_prefix="ur_1",
                                           rclcpp_node=self.sas_manager.rclcpp_node,
                                           sim=self.sim)

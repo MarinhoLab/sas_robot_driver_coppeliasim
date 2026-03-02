@@ -14,7 +14,7 @@ class SimROS2RobotManager:
 
         self.name = name
         self.joint_names = joint_names
-        self.joint_handles = []
+        self.joint_handles = sim.getObjectsInTree(sim.getObject(name), sim.sceneobject_joint)
         self.topic_prefix = topic_prefix
         self.rclcpp_node = rclcpp_node
         self.coppeliasim_sim = sim
@@ -28,9 +28,6 @@ class SimROS2RobotManager:
         self.q_dot: np.array = np.zeros(self.DOF)
         self.q_force: np.array = np.zeros(self.DOF)
         self.q_target: np.array = None
-
-        for joint_name in self.joint_names:
-            self.joint_handles.append(self.sim.getObject(joint_name))
 
     def update(self):
         for i in self.DOF:
