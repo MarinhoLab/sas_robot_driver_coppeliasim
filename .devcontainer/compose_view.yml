@@ -14,13 +14,13 @@ services:
       - ~/.Xauthority:/root/.Xauthority # x server related
     # network_mode: "host" # x server related
     command: /bin/bash -c "
-      echo $ROS_DOMAIN_ID
+      echo 'ROS_DOMAIN_ID=$ROS_DOMAIN_ID'
       && cd /root/sas_tutorial_workspace/src/
-      && tree .
       && colcon build --packages-select sas_robot_driver_coppeliasim
       && source install/setup.bash
       && cd "$$COPPELIASIM_PATH"
       && ./coppeliaSim.sh" #\
+      # && tree .
       #&& [ -f /root/sas_tutorial_workspace/src/sas_robot_driver_coppeliasim/SampleCommunicationScene.ttt ]
       #-s0 \
       #/root/sas_tutorial_workspace/src/sas_robot_driver_coppeliasim/SampleCommunicationScene.ttt"
@@ -31,5 +31,6 @@ services:
       - ROS_DOMAIN_ID
     tty: true
     stdin_open: true
-    stop_signal: SIGINT
-    stop_grace_period: 1m
+    command: /bin/bash -c "
+      echo 'ROS_DOMAIN_ID=$ROS_DOMAIN_ID'
+      && while true; do ros2 topic list; sleep 60; done"

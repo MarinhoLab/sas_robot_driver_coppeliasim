@@ -21,7 +21,7 @@ def sysCall_init():
     # self.myVariable = 21000000
 
 def sysCall_actuation():
-    self.node.get_logger().info(f'Printed.')
+    # self.node.get_logger().info(f'Printed.')
     self.amazing_quote_publisher.publish(Point())
 
 def sysCall_sensing():
