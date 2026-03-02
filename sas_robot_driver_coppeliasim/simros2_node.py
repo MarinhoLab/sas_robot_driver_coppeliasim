@@ -1,4 +1,3 @@
-import rclpy
 from rclpy.node import Node
 
 from sas_common import rclcpp_Node
