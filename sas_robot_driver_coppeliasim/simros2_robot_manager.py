@@ -1,20 +1,61 @@
 from sas_common import rclcpp_Node
 from sas_robot_driver import RobotDriverServer
+import sys
+import numpy as np
 
 class SimROS2RobotManager:
+
     def __init__(self,
                  name: str,
                  joint_names: list[str],
                  topic_prefix: str,
-                 rclcpp_node: rclcpp_Node):
+                 rclcpp_node: rclcpp_Node,
+                 sim):
+
         self.name = name
         self.joint_names = joint_names
+        self.joint_handles = []
         self.topic_prefix = topic_prefix
         self.rclcpp_node = rclcpp_node
+        self.coppeliasim_sim = sim
+
+        self.DOF = len(self.joint_names)
 
         self.rds = RobotDriverServer(node, self.topic_prefix)
-        self.q = None
+        self.q: np.array = np.zeros(self.DOF)
+        self.q_min: np.array = np.zeros(self.DOF)
+        self.q_max: np.array = np.zeros(self.DOF)
+        self.q_dot: np.array = np.zeros(self.DOF)
+        self.q_force: np.array = np.zeros(self.DOF)
+        self.q_target: np.array = None
 
+        for joint_name in self.joint_names:
+            self.joint_handles.append(self.sim.getObject(joint_name))
 
+    def update(self):
+        for i in self.DOF:
+            self.q[i] = self.sim.getJointPosition(self.joint_handles[i])
+            self.q_dot[i] = self.sim.getJointVelocity(self.joint_handles[i])
+            self.q_force[i] = self.sim.getJointForce(self.joint_handles[i])
+
+            cyclic, interval = sim.getJointInterval(self.joint_handles[i])
+            if cyclic:
+                self.q_min[i] = -sys.float_info.max
+                self.q_max[i] = sys.float_info.max
+            else:
+                self.q_min[i] = interval[0]
+                self.q_max[i] = interval[1]
+
+            if self.q_target is not None:
+                self.sim.setJointTargetPosition(self.joint_handles[i], self.q_target[i])
+
+        if self.rds.is_enaled():
+            self.q_target = self.rds.get_target_joint_positions()
+            self.rds.send_joint_states(
+                self.q,
+                self.q_dot,
+                self.q_force,
+            )
+            self.rds.send_joint_limits((self.q_min, self.q_max))
 
 
