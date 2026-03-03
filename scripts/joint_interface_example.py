@@ -32,6 +32,8 @@ import numpy
 from dqrobotics import *  # Despite what PyCharm might say, this is very much necessary or DQs will not be recognized
 from dqrobotics.utils.DQ_Math import deg2rad
 
+import rclpy
+
 from sas_common import rclcpp_init, rclcpp_Node, rclcpp_spin_some, rclcpp_shutdown
 from sas_robot_driver import RobotDriverClient
 
@@ -40,15 +42,21 @@ from sas_core import Clock, Statistics
 
 def main(args=None):
     try:
+        rclpy.init(args=args)
+        rospy_node = Node('sas_robot_driver_coppeliasim_joint_space_example_node_py')
+
         rclcpp_init()
-        node = rclcpp_Node("sas_robot_driver_myrobot_joint_space_example_node_cpp")
+        node = rclcpp_Node("sas_robot_driver_coppeliasim_joint_space_example_node_cpp")
+
+        rospy_node.declare_parameter('robot_topic_name', 'sas_robot_driver_coppeliasim/UR5')
+        robot_topic_name = rospy_node.get_parameter('robot_topic_name').get_parameter_value().string_value
 
         # 10 ms clock
         clock = Clock(0.01)
         clock.init()
 
         # Initialize the RobotDriverClient
-        rdi = RobotDriverClient(node, 'sas_robot_driver_coppeliasim/UR5')
+        rdi = RobotDriverClient(node, robot_topic_name)
 
         # Wait for RobotDriverClient to be enabled
         while not rdi.is_enabled():
