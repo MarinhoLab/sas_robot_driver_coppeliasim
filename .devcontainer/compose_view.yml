@@ -3,6 +3,7 @@ services:
     build:
       dockerfile: Dockerfile_view
     stop_signal: SIGINT
+    platform: linux/amd64 # No current build for arm64
     environment:
       - DISPLAY
       - ROS_DOMAIN_ID
