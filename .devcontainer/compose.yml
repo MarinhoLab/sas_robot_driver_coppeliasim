@@ -24,10 +24,10 @@ services:
       -s0 \
       $$COPPELIA_SIM_SCENE_PATH"
 
-  comm_test:
-    build:
-      dockerfile: Dockerfile_comm_test
-    environment:
-      - ROS_DOMAIN_ID
-    command: /bin/bash -c "
-      while true; do ros2 node list; sleep 5; done"
+  #comm_test:
+  #  build:
+  #    dockerfile: Dockerfile_comm_test
+  #  environment:
+  #    - ROS_DOMAIN_ID
+  #  command: /bin/bash -c "
+  #    while true; do ros2 node list; sleep 5; done"
