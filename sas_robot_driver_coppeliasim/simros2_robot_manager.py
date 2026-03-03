@@ -23,7 +23,7 @@ class SimROS2RobotManager:
         self.coppeliasim_sim = sim
 
         if joint_names is None:
-            self.joint_handles = sim.getObjectsInTree(sim.getObject(self.robot_base_handle), sim.sceneobject_joint)
+            self.joint_handles = sim.getObjectsInTree(self.robot_base_handle, sim.sceneobject_joint)
         else:
             raise Exception("Not implemented yet.")
 
@@ -56,11 +56,12 @@ class SimROS2RobotManager:
 
         if self.rds.is_enaled():
             self.q_target = self.rds.get_target_joint_positions()
-            self.rds.send_joint_states(
-                self.q,
-                self.q_dot,
-                self.q_force,
-            )
-            self.rds.send_joint_limits((self.q_min, self.q_max))
+
+        self.rds.send_joint_states(
+            self.q,
+            self.q_dot,
+            self.q_force,
+        )
+        self.rds.send_joint_limits((self.q_min, self.q_max))
 
 
