@@ -10,6 +10,6 @@ curl -OL "$BASE_REPO_URL"/docker/compose.yml
 curl -OL "$BASE_REPO_URL"/docker/compose_joint_interface_example.yml
 curl -OL "$BASE_REPO_URL"/docker/SampleCommunicationScene.ttt
 
-docker compose -f compose_joint_interface_example.yml build --pull
+docker compose -f compose_joint_interface_example.yml pull
 xhost +local:root
 docker compose -f compose_joint_interface_example.yml up
