@@ -20,7 +20,7 @@ class SimROS2RobotManager:
         self.robot_base_handle = robot_base_handle
         self.topic_prefix = topic_prefix
         self.rclcpp_node = rclcpp_node
-        self.coppeliasim_sim = sim
+        self.sim = sim
 
         if joint_names is None:
             self.joint_handles = sim.getObjectsInTree(self.robot_base_handle, sim.sceneobject_joint)
@@ -29,7 +29,7 @@ class SimROS2RobotManager:
 
         self.DOF = len(self.joint_handles)
 
-        self.rds = RobotDriverServer(rclcpp_node, self.topic_prefix)
+        self.rds = RobotDriverServer(rclcpp_node, f"/sas_robot_driver_coppeliasim{self.topic_prefix}")
         self.q: np.array = np.zeros(self.DOF)
         self.q_min: np.array = np.zeros(self.DOF)
         self.q_max: np.array = np.zeros(self.DOF)
@@ -59,7 +59,7 @@ class SimROS2RobotManager:
         self.rds.send_joint_limits((self.q_min, self.q_max))
 
     def actuation_update(self):
-        if self.rds.is_enaled():
+        if self.rds.is_enabled():
             self.q_target = self.rds.get_target_joint_positions()
             if self.q_target is not None:
                 for i in range(self.DOF):
