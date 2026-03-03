@@ -14,7 +14,8 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix # x server related
       - ~/.Xauthority:/root/.Xauthority # x server related
     command: /bin/bash -c "
-      cd /root/sas_tutorial_workspace/src/
+      sudo apt-get update && sudo apt-get upgrade -y
+      && cd /root/sas_tutorial_workspace/src/
       && colcon build --packages-select sas_robot_driver_coppeliasim
       && source install/setup.bash
       && [ -f $$COPPELIA_SIM_SCENE_PATH ]

@@ -30,10 +30,11 @@ class SimROS2Manager:
 
     def sys_call_actuation(self):
         if self.node is not None:
-            self.node.update()
+            self.node.actuation_update()
 
     def sys_call_sensing(self):
         if self.node is not None:
+            self.node.sensing_update()
             rclpy.spin_once(self.node, timeout_sec=0.0)
             rclcpp_spin_some(self.rclcpp_node)
 
