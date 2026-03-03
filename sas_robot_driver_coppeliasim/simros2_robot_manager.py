@@ -37,7 +37,7 @@ class SimROS2RobotManager:
         self.q_force: np.array = np.zeros(self.DOF)
         self.q_target: np.array = None
 
-    def update(self):
+    def sensing_update(self):
         for i in range(self.DOF):
             self.q[i] = self.sim.getJointPosition(self.joint_handles[i])
             self.q_dot[i] = self.sim.getJointVelocity(self.joint_handles[i])
@@ -51,12 +51,6 @@ class SimROS2RobotManager:
                 self.q_min[i] = interval[0]
                 self.q_max[i] = interval[1]
 
-            if self.q_target is not None:
-                self.sim.setJointTargetPosition(self.joint_handles[i], self.q_target[i])
-
-        if self.rds.is_enaled():
-            self.q_target = self.rds.get_target_joint_positions()
-
         self.rds.send_joint_states(
             self.q,
             self.q_dot,
@@ -64,4 +58,9 @@ class SimROS2RobotManager:
         )
         self.rds.send_joint_limits((self.q_min, self.q_max))
 
-
+    def actuation_update(self):
+        if self.rds.is_enaled():
+            self.q_target = self.rds.get_target_joint_positions()
+            if self.q_target is not None:
+                for i in range(self.DOF):
+                    self.sim.setJointTargetPosition(self.joint_handles[i], self.q_target[i])

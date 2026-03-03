@@ -27,13 +27,14 @@ class SimROS2ObjectManager:
 
         self.x = None
 
-    def update(self):
+    def sensing_update(self):
         x_cs = self.sim.getObjectPose(self.object_handle)
         t = x_cs[0]*i_ + x_cs[1]*j_ + x_cs[2]*k_
         r = (x_cs[6] + x_cs[3]*i_ + x_cs[4]*j_ + x_cs[5]*k_).normalize()
         msg = dq_to_geometry_msgs_pose_stamped(r + 0.5*E_*t*r)
         self.publisher.publish(msg)
 
+    def actuation_update(self):
         if self.x is not None:
             t = vec3(translation(self.x))
             r = vec4(rotation(self.x))

@@ -24,8 +24,14 @@ class SimROS2Node(Node):
     def add_object_manager(self, robot_manager: SimROS2ObjectManager):
         self.object_managers.append(robot_manager)
 
-    def update(self):
+    def sensing_update(self):
         for robot_manager in self.robot_managers:
-            robot_manager.update()
+            robot_manager.sensing_update()
         for object_manager in self.object_managers:
-            object_manager.update()
+            object_manager.sensing_update()
+
+    def actuation_update(self):
+        for robot_manager in self.robot_managers:
+            robot_manager.actuation_update()
+        for object_manager in self.object_managers:
+            object_manager.actuation_update()
