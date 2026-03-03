@@ -1,21 +1,21 @@
 #!/usr/bin/python3
 """
-# Copyright (c) 2012-2025 Murilo Marques Marinho
+# Copyright (c) 2012-2026 Murilo Marques Marinho
 #
-#    This file is part of sas_robot_driver_myrobot.
+#    This file is part of sas_robot_driver_coppeliasim.
 #
-#    sas_robot_driver_myrobot is free software: you can redistribute it and/or modify
+#    sas_robot_driver_coppeliasim is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Lesser General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
 #
-#    sas_robot_driver_myrobot is distributed in the hope that it will be useful,
+#    sas_robot_driver_coppeliasim is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU Lesser General Public License for more details.
 #
 #    You should have received a copy of the GNU Lesser General Public License
-#    along with sas_robot_driver_myrobot.  If not, see <https://www.gnu.org/licenses/>.
+#    along with sas_robot_driver_coppeliasim.  If not, see <https://www.gnu.org/licenses/>.
 #
 # #######################################################################################
 #
@@ -69,6 +69,7 @@ def main(args=None):
 
         # Read the values sent by the RobotDriverServer
         joint_positions = rdi.get_joint_positions()
+        DOF = len(joint_positions)
         print(f"joint positions = {joint_positions}")
 
         # For some iterations. Note that this can be stopped with CTRL+C.
@@ -76,7 +77,7 @@ def main(args=None):
             clock.update_and_sleep()
 
             # Move the joints
-            target_joint_positions = joint_positions + deg2rad([10.0 * sin(i / (50.0 * pi))] * 6)
+            target_joint_positions = joint_positions + deg2rad([10.0 * sin(i / (50.0 * pi))] * DOF)
             # print(target_joint_positions)
             rdi.send_target_joint_positions(target_joint_positions)
 
