@@ -1,7 +1,7 @@
 from dqrobotics import *
 from rclpy.node import Node
 from geometry_msgs.msg import PoseStamped
-from sas_conversions import geometry_msgs_pose_stamped_to_dq
+from sas_conversions import geometry_msgs_pose_stamped_to_dq, dq_to_geometry_msgs_pose_stamped
 
 class SimROS2ObjectManager:
 
@@ -12,8 +12,9 @@ class SimROS2ObjectManager:
 
         self.object_handle = object_handle
         self.object_alias = sim.getObjectAlias(object_handle, 1).replace("[", "_").replace("]", "_")
+        self.sim = sim
 
-        self.publishers = node.create_publisher(
+        self.publisher = node.create_publisher(
             msg_type=PoseStamped,
             topic=f'/sas_robot_driver_coppeliasim/object{self.object_alias}/get/pose',
             qos_profile=1)
@@ -27,6 +28,12 @@ class SimROS2ObjectManager:
         self.x = None
 
     def update(self):
+        x_cs = self.sim.getObjectPose(self.object_handle)
+        t = x_cs[0]*i_ + x_cs[1]*j_ + x_cs[2]*k_
+        r = (x_cs[6] + x_cs[3]*i_ + x_cs[4]*j_ + x_cs[5]*k_).normalize()
+        msg = dq_to_geometry_msgs_pose_stamped(r + 0.5*E_*t*r)
+        self.publisher.publish(msg)
+
         if self.x is not None:
             t = vec3(translation(self.x))
             r = vec4(rotation(self.x))
