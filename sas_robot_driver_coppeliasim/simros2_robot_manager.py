@@ -22,7 +22,6 @@ class SimROS2RobotManager:
         self.rclcpp_node = rclcpp_node
         self.coppeliasim_sim = sim
 
-
         if joint_names is None:
             self.joint_handles = sim.getObjectsInTree(sim.getObject(self.robot_base_handle), sim.sceneobject_joint)
         else:
