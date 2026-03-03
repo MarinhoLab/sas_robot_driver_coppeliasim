@@ -48,7 +48,7 @@ def main(args=None):
         clock.init()
 
         # Initialize the RobotDriverClient
-        rdi = RobotDriverClient(node, 'myrobot_1')
+        rdi = RobotDriverClient(node, 'sas_robot_driver_coppeliasim/UR5')
 
         # Wait for RobotDriverClient to be enabled
         while not rdi.is_enabled():
