@@ -1,5 +1,9 @@
 # sas_robot_driver_coppeliasim
 
+> [!NOTE]
+> `sas_robot_driver_coppeliasim_node` is being replaced by the ROS2 Python scripts described below.
+> `zmq` interface for `CoppeliaSim` currently cannot handle multiple operations at a high frequency.
+
 ## ROS2 Python Scripts In CoppeliaSim
 
 > [!IMPORTANT]
@@ -15,19 +19,16 @@ chmod +x run_docker_sample.sh
 ```
 
 Notes
-- Remember to edit `COPPELIA_SIM_SCENE_PATH` in the compose file to be the scene file in a reachable volume.
+- Remember to edit `COPPELIA_SIM_SCENE_FILE` in the compose file to be the correct scene file in the same directory.
+- Each robot is being controlled with the script `scripts/joint_interface_example.py`.
 
 ### Adding capabilities to your own scenes
 
-Use the following scripts convenience scripts for the most common functionalities.
+Use the following convenience scripts for the most common functionalities.
 
 |                                      |                                                                                     |
 |--------------------------------------|-------------------------------------------------------------------------------------|
-| `.devcontainer/sas_object_script.py` | Add to the root of an object in the scene to get and send poses.                    |
+| `.devcontainer/sas_object_script.py` | Add to the root of an object in the scene, for instance, to get and send poses.     |
 | `.devcontainer/sas_robot_script.py`  | Add to the root of a serial-link robot to create a `sas::RobotDriverServer` for it. |
 
 Unusual use cases can be covered by the classes in the Python module `sas_robot_driver_coppeliasim`.
-
-### Controlling robots with `sas`
-
-A sample script is available in `scripts/joint_interface_example.py`.

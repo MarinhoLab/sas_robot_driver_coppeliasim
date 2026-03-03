@@ -12,8 +12,8 @@ def generate_launch_description():
         Node(
             output='screen',
             emulate_tty=True,
-            package='sas_robot_driver_myrobot',
-            executable='sas_robot_driver_myrobot_node',
+            package='sas_robot_driver_coppeliasim',
+            executable='sas_robot_driver_coppeliasim_node',
             name='myrobot_1',
             parameters=[{
                 "ip": "127.0.0.1",
