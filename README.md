@@ -2,13 +2,22 @@
 
 ## ROS2 Python Scripts In CoppeliaSim
 
-Use the following sample environment. 
+> [!IMPORTANT]
+> This image only works in `amd64` environments owing to CoppeliaSim limitations. 
+> It does not work in `arm64` even with `qemu`.
 
 ```console
-cd docker
-docker compose build --pull
-docker compose up
+mkdir -p ~/sas_tutorial_workspace/docker/sas_robot_driver_coppeliasim
+cd ~/sas_tutorial_workspace/docker/sas_robot_driver_coppeliasim/
+curl -OL https://raw.githubusercontent.com/MarinhoLab/sas_robot_driver_coppeliasim/refs/heads/jazzy/docker/run_docker_sample.sh
+chmod +x run_docker_sample.sh
+./run_docker_sample.sh
 ```
+
+Notes
+- Remember to edit `COPPELIA_SIM_SCENE_PATH` in the compose file to be the scene file in a reachable volume.
+
+### Adding capabilities to your own scenes
 
 Use the following scripts convenience scripts for the most common functionalities.
 
@@ -17,18 +26,8 @@ Use the following scripts convenience scripts for the most common functionalitie
 | `.devcontainer/sas_object_script.py` | Add to the root of an object in the scene to get and send poses.                    |
 | `.devcontainer/sas_robot_script.py`  | Add to the root of a serial-link robot to create a `sas::RobotDriverServer` for it. |
 
-Unusual use cases can be covered by the classes inside `sas_robot_driver_coppeliasim`.
+Unusual use cases can be covered by the classes in the Python module `sas_robot_driver_coppeliasim`.
 
-Notes
-- Remember to edit `COPPELIA_SIM_SCENE_PATH` in the compose file to be the scene file in a reachable volume.
+### Controlling robots with `sas`
 
-## Controlling robots with `sas`
-
-A sample joint controller can be used with the following environment. This will run the sample simulation and the sample
-script `scripts/joint_interface_example.py`.
-
-```console
-cd docker
-docker compose -f compose_joint_interface_example.yml build --pull
-docker compose -f compose_joint_interface_example.yml up
-```
+A sample script is available in `scripts/joint_interface_example.py`.
