@@ -33,6 +33,7 @@ from dqrobotics import *  # Despite what PyCharm might say, this is very much ne
 from dqrobotics.utils.DQ_Math import deg2rad
 
 import rclpy
+from rclpy.node import Node
 
 from sas_common import rclcpp_init, rclcpp_Node, rclcpp_spin_some, rclcpp_shutdown
 from sas_robot_driver import RobotDriverClient
