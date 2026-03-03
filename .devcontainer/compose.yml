@@ -1,7 +1,6 @@
 services:
   coppeliasim:
-    build:
-      dockerfile: Dockerfile_view
+    build: .
     stop_signal: SIGINT
     platform: linux/amd64 # No current build for arm64
     environment:

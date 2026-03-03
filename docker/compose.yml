@@ -1,33 +1,21 @@
 services:
-  sas_robot_driver_coppeliasim:
-    build: https://github.com/MarinhoLab/sas_ur_control_template.git#main:.devel/sas_ur_control_template
-    volumes:
-      - sas_robot_driver_coppeliasim-repo-data:/root/sas_tutorial_workspace/src/sas_ur_control_template/
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    command: /bin/bash -c "
-      ros2 launch sas_ur_control_template \
-      simulation_example_cpp_launch.py \
-      coppeliasim_ip:='host.docker.internal' \
-      coppeliasim_timeout:=10000"
-
   coppeliasim:
     image: murilomarinho/coppeliasim:latest
-    platform: linux/amd64
     stop_signal: SIGINT
+    platform: linux/amd64 # No current build for arm64
     environment:
-      DISPLAY: $DISPLAY # x server related
+      - DISPLAY
+      - ROS_DOMAIN_ID
+      - COPPELIA_SIM_SCENE_PATH=/root/sas_tutorial_workspace/src/sas_robot_driver_coppeliasim/SampleCommunicationScene.ttt
     privileged: true # Needed for some gpu configurations.
     volumes:
-      - sas_robot_driver_coppeliasim-repo-data:/root/sas_tutorial_workspace/src/sas_ur_control_template/
+      - ../../:/root/sas_tutorial_workspace/src/
       - /tmp/.X11-unix:/tmp/.X11-unix # x server related
       - ~/.Xauthority:/root/.Xauthority # x server related
-    network_mode: "host" # x server related
     command: /bin/bash -c "
-      cd "$$COPPELIASIM_PATH"
-      && ./coppeliaSim.sh \
+      sudo apt-get update && sudo apt-get upgrade -y
+      && [ -f $$COPPELIA_SIM_SCENE_PATH ]
+      && cd "$$COPPELIASIM_PATH"
+      && ./coppeliaSim.sh 
       -s0 \
-      /root/sas_tutorial_workspace/src/sas_ur_control_template/scenes/UR3e_480rev0.ttt"
-
-volumes:
-  sas_robot_driver_coppeliasim-repo-data:
+      $$COPPELIA_SIM_SCENE_PATH"
