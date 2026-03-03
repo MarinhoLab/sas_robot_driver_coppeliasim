@@ -4,14 +4,15 @@ def sysCall_init():
     self.sim = require('sim')
     self.sas_manager = SimROS2Manager(self.sim)
     robot_base_handle = self.sim.getObject("..")
+    self.sas_manager.sys_call_init()
     sas_robot_manager = SimROS2RobotManager(
         topic_prefix=self.sim.getObjectAlias(robot_base_handle, 1),
         rclcpp_node=self.sas_manager.rclcpp_node,
         sim=self.sim,
         robot_base_handle=robot_base_handle
     )
-    self.sas_manager.add_robot_manager(sas_robot_manager)
-    self.sas_manager.sys_call_init()
+    self.sas_manager.node.add_robot_manager(sas_robot_manager)
+
 
 def sysCall_actuation():
     self.sas_manager.sys_call_actuation()
