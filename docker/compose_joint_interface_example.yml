@@ -19,3 +19,35 @@ services:
     command: /bin/bash -c "
       sudo apt-get update && sudo apt-get upgrade -y
       && ros2 run sas_robot_driver_coppeliasim joint_interface_example.py --ros-args -p robot_topic_name:=sas_robot_driver_coppeliasim/LBRiiwa14R820"
+
+  joint_interface_example_3:
+    image: murilomarinho/sas:jazzy
+    environment:
+      - ROS_DOMAIN_ID
+    command: /bin/bash -c "
+      sudo apt-get update && sudo apt-get upgrade -y
+      && ros2 run sas_robot_driver_coppeliasim joint_interface_example.py --ros-args -p robot_topic_name:=sas_robot_driver_coppeliasim/Franka"
+
+  joint_interface_example_4:
+    image: murilomarinho/sas:jazzy
+    environment:
+      - ROS_DOMAIN_ID
+    command: /bin/bash -c "
+      sudo apt-get update && sudo apt-get upgrade -y
+      && ros2 run sas_robot_driver_coppeliasim joint_interface_example.py --ros-args -p robot_topic_name:=sas_robot_driver_coppeliasim/NiryoOne"
+
+  joint_interface_example_5:
+    image: murilomarinho/sas:jazzy
+    environment:
+      - ROS_DOMAIN_ID
+    command: /bin/bash -c "
+      sudo apt-get update && sudo apt-get upgrade -y
+      && ros2 run sas_robot_driver_coppeliasim joint_interface_example.py --ros-args -p robot_topic_name:=sas_robot_driver_coppeliasim/UR10"
+
+  joint_interface_example_6:
+    image: murilomarinho/sas:jazzy
+    environment:
+      - ROS_DOMAIN_ID
+    command: /bin/bash -c "
+      sudo apt-get update && sudo apt-get upgrade -y
+      && ros2 run sas_robot_driver_coppeliasim joint_interface_example.py --ros-args -p robot_topic_name:=sas_robot_driver_coppeliasim/IRB140"
