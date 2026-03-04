@@ -1,5 +1,9 @@
 # sas_robot_driver_coppeliasim
 
+> [!TIP]
+> Repository for this module: https://github.com/MarinhoLab/sas_robot_driver_coppeliasim \
+> More information about SmartArmStack is available in https://smartarmstack.github.io/.
+
 > [!NOTE]
 > `sas_robot_driver_coppeliasim_node` is being replaced by the ROS2 Python scripts described below.
 > `zmq` interface for `CoppeliaSim` currently cannot handle multiple operations at a high frequency.
