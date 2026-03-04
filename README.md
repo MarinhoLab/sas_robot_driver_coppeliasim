@@ -16,6 +16,8 @@
 
 https://github.com/user-attachments/assets/3d6222b8-e683-4039-ab72-d6a7ad08ba51
 
+![](./sas_rdcs_sample.mp4)
+
 Run the following.
 
 ```console
