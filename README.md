@@ -6,9 +6,13 @@
 
 ## ROS2 Python Scripts In CoppeliaSim
 
-> [!IMPORTANT]
+> [!CAUTION]
 > This image only works in `amd64` environments owing to CoppeliaSim limitations. 
 > It does not work in `arm64` even with `qemu`.
+
+https://github.com/user-attachments/assets/3d6222b8-e683-4039-ab72-d6a7ad08ba51
+
+Run the following.
 
 ```console
 mkdir -p ~/sas_tutorial_workspace/docker/sas_robot_driver_coppeliasim
@@ -26,9 +30,12 @@ Notes
 
 Use the following convenience scripts for the most common functionalities.
 
-|                                      |                                                                                     |
-|--------------------------------------|-------------------------------------------------------------------------------------|
-| `.devcontainer/sas_object_script.py` | Add to the root of an object in the scene, for instance, to get and send poses.     |
-| `.devcontainer/sas_robot_script.py`  | Add to the root of a serial-link robot to create a `sas::RobotDriverServer` for it. |
+> [!IMPORTANT]
+> Add the scripts via the top menu with `Add` ▶️ `Script` ▶️ `simulation script` ▶️ `Non threaded` ▶️ `Python`.
+
+|                                      |                                                                                                        |
+|--------------------------------------|--------------------------------------------------------------------------------------------------------|
+| `.devcontainer/sas_object_script.py` | Add as immediate child to the root of an object in the scene, for instance, to get and send poses.     |
+| `.devcontainer/sas_robot_script.py`  | Add as immediate child to the root of a serial-link robot to create a `sas::RobotDriverServer` for it. |
 
 Unusual use cases can be covered by the classes in the Python module `sas_robot_driver_coppeliasim`.
