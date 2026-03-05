@@ -7,9 +7,9 @@ mkdir -p "$EXAMPLE_FOLDER"
 cd "$EXAMPLE_FOLDER"
 
 curl -OL "$BASE_REPO_URL"/docker_sample/compose.yml
-curl -OL "$BASE_REPO_URL"/docker_sample/compose_joint_interface_example.yml
+curl -OL "$BASE_REPO_URL"/docker_sample/compose_example.yml
 curl -OL "$BASE_REPO_URL"/docker_sample/SampleCommunicationScene.ttt
 
-docker compose -f compose_joint_interface_example.yml pull
+docker compose -f compose_example.yml pull
 xhost +local:root
-docker compose -f compose_joint_interface_example.yml up
+docker compose -f compose_example.yml up
