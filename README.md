@@ -21,9 +21,9 @@ https://github.com/user-attachments/assets/3d6222b8-e683-4039-ab72-d6a7ad08ba51
 Run the following.
 
 ```console
-mkdir -p ~/sas_tutorial_workspace/docker/sas_robot_driver_coppeliasim
-cd ~/sas_tutorial_workspace/docker/sas_robot_driver_coppeliasim/
-curl -OL https://raw.githubusercontent.com/MarinhoLab/sas_robot_driver_coppeliasim/refs/heads/jazzy/docker/run_docker_sample.sh
+mkdir -p ~/sas_tutorial_workspace/docker_sample/sas_robot_driver_coppeliasim
+cd ~/sas_tutorial_workspace/docker_sample/sas_robot_driver_coppeliasim/
+curl -OL https://raw.githubusercontent.com/MarinhoLab/sas_robot_driver_coppeliasim/refs/heads/jazzy/docker_sample/run_docker_sample.sh
 chmod +x run_docker_sample.sh
 ./run_docker_sample.sh
 ```
