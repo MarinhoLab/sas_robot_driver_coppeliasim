@@ -51,3 +51,27 @@ services:
     command: /bin/bash -c "
       sudo apt-get update && sudo apt-get upgrade -y
       && ros2 run sas_robot_driver_coppeliasim joint_interface_example.py --ros-args -p robot_topic_name:=sas_robot_driver_coppeliasim/IRB140"
+
+  object_interface_example_1:
+    image: murilomarinho/sas:jazzy
+    environment:
+      - ROS_DOMAIN_ID
+    command: /bin/bash -c "
+      sudo apt-get update && sudo apt-get upgrade -y
+      && ros2 run sas_robot_driver_coppeliasim object_interface_example.py --ros-args -p object_topic_name:=sas_robot_driver_coppeliasim/ReferenceFrame"
+
+  object_interface_example_2:
+    image: murilomarinho/sas:jazzy
+    environment:
+      - ROS_DOMAIN_ID
+    command: /bin/bash -c "
+      sudo apt-get update && sudo apt-get upgrade -y
+      && ros2 run sas_robot_driver_coppeliasim object_interface_example.py --ros-args -p object_topic_name:=sas_robot_driver_coppeliasim/Sphere"
+
+  object_interface_example_3:
+    image: murilomarinho/sas:jazzy
+    environment:
+      - ROS_DOMAIN_ID
+    command: /bin/bash -c "
+      sudo apt-get update && sudo apt-get upgrade -y
+      && ros2 run sas_robot_driver_coppeliasim object_interface_example.py --ros-args -p object_topic_name:=sas_robot_driver_coppeliasim/Capsule"
