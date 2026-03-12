@@ -1,3 +1,27 @@
+"""
+# Copyright (c) 2026 Murilo Marques Marinho
+#
+#    This file is part of sas_robot_driver_coppeliasim.
+#
+#    sas_robot_driver_coppeliasim is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Lesser General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    sas_robot_driver_coppeliasim is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Lesser General Public License for more details.
+#
+#    You should have received a copy of the GNU Lesser General Public License
+#    along with sas_robot_driver_coppeliasim.  If not, see <https://www.gnu.org/licenses/>.
+#
+# #######################################################################################
+#
+#   Author: Murilo M. Marinho, email: murilomarinho@ieee.org
+#
+# #######################################################################################
+"""
 from dqrobotics import *
 from rclpy.node import Node
 from geometry_msgs.msg import PoseStamped
@@ -41,6 +65,7 @@ class SimROS2ObjectManager:
             x_cs = [t[0], t[1], t[2],
                     r[1], r[2], r[3], r[0]]
             self.sim.setObjectPose(self.object_handle, x_cs)
+            self.x = None # 26.03.12 - Objects won't be manipulable in the interface otherwise, even those we want to update only once.
 
     def subscriber_callback(self, msg: PoseStamped):
         self.x = geometry_msgs_pose_stamped_to_dq(msg)
