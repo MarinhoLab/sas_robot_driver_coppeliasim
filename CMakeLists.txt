@@ -1,5 +1,10 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.20)
 project(sas_robot_driver_coppeliasim)
+
+# Default to C++20
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 20)
+endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -7,6 +12,7 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sas_core REQUIRED)
@@ -26,13 +32,6 @@ add_library(${PROJECT_NAME} SHARED
     src/${PROJECT_NAME}.cpp
 )
 
-ament_target_dependencies(${PROJECT_NAME} PUBLIC
-    sas_core
-    sas_common
-    sas_robot_driver
-
-    )
-
 target_include_directories(${PROJECT_NAME}
     PUBLIC
     $<INSTALL_INTERFACE:include>)
@@ -43,16 +42,13 @@ target_include_directories(${PROJECT_NAME}
     )
 
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
-ament_export_dependencies(
-    sas_core
-    sas_common
-    sas_robot_driver
 
-    )
-
-target_link_libraries(${PROJECT_NAME} PUBLIC
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC
     dqrobotics
-    dqrobotics-interface-coppeliasim-zmq
+    sas_core::sas_core
+    sas_common::sas_common
+    sas_robot_driver::sas_robot_driver
 )
 
 install(
@@ -87,17 +83,9 @@ add_executable(${RCLCPP_LOCAL_BINARY_NAME}
 
     )
 
-ament_target_dependencies(${RCLCPP_LOCAL_BINARY_NAME}
-    rclcpp
-    sas_common
-    sas_core
-    sas_robot_driver
-
-)
-
 target_link_libraries(${RCLCPP_LOCAL_BINARY_NAME}
+    PRIVATE
     ${PROJECT_NAME}
-
     )
 
 target_include_directories(${RCLCPP_LOCAL_BINARY_NAME} PUBLIC
@@ -138,17 +126,5 @@ install(DIRECTORY
 # ^^^^^^^^^^^^^^^^^^^ #
 # Scripts Block [END] #
 #######################
-
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # comment the line when a copyright and license is added to all source files
-  set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # comment the line when this package is in a git repo and when
-  # a copyright and license is added to all source files
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
 
 ament_package()
