@@ -24,6 +24,11 @@
 #
 # ################################################################*/
 
+/**
+ * @file sas_robot_driver_coppeliasim.hpp
+ * @brief RobotDriver for CoppeliaSim via ZMQ.
+ */
+
 #include <atomic>
 #include <memory>
 
@@ -36,22 +41,27 @@ using namespace Eigen;
 namespace sas
 {
 
+/**
+ * @brief Configuration for RobotDriverCoppeliaSim.
+ */
 struct RobotDriverCoppeliaSimConfiguration
 {
-    int port;
-    std::string ip;
-    int timeout = 1000;
-    std::vector<std::string> robot_joint_names;
+    int port;                                   ///< ZMQ port number.
+    std::string ip;                             ///< CoppeliaSim IP address.
+    int timeout = 1000;                         ///< Connection timeout in milliseconds.
+    std::vector<std::string> robot_joint_names; ///< Names of the joints to control.
 };
 
-
+/**
+ * @brief RobotDriver for CoppeliaSim via ZMQ.
+ */
 class RobotDriverCoppeliaSim: public RobotDriver
 {
 private:
-    RobotDriverCoppeliaSimConfiguration configuration_;
+    RobotDriverCoppeliaSimConfiguration configuration_; ///< Driver configuration.
+    VectorXd joint_positions_;                          ///< Cached joint positions.
+    std::shared_ptr<DQ_CoppeliaSimInterfaceZMQ> csi_;   ///< CoppeliaSim ZMQ interface.
 
-    VectorXd joint_positions_;
-    std::shared_ptr<DQ_CoppeliaSimInterfaceZMQ> csi_;
 public:
 
     // Prevent copies as usually drivers have threads
@@ -59,20 +69,49 @@ public:
     RobotDriverCoppeliaSim()=delete;
     ~RobotDriverCoppeliaSim();
 
-    // This boilderplate constructor usually does the job well and prevent big changes when
-    // parameters change
+    /**
+     * @brief Constructs the driver.
+     * @param configuration Driver configuration parameters.
+     * @param break_loops Pointer to the loop-breaking flag.
+     */
     RobotDriverCoppeliaSim(const RobotDriverCoppeliaSimConfiguration &configuration, std::atomic_bool* break_loops);
 
-    /// Everything below this line is an override
-    /// the concrete implementations are needed
+    /**
+     * @brief Returns current joint positions in radians.
+     * @return Joint positions as a VectorXd.
+     */
     VectorXd get_joint_positions() override;
+
+    /**
+     * @brief Sets joint positions and target joint positions.
+     * @param desired_joint_positions_rad Desired joint positions in radians.
+     */
     void set_target_joint_positions(const VectorXd& desired_joint_positions_rad) override;
+
+    /**
+     * @brief Returns joint position limits.
+     * @return Tuple of (min, max) joint position vectors.
+     */
     std::tuple<VectorXd, VectorXd> get_joint_limits() override;
 
+    /**
+     * @brief Connects to the CoppeliaSim instance.
+     */
     void connect() override;
+
+    /**
+     * @brief Disconnects from the CoppeliaSim instance.
+     */
     void disconnect() override;
 
+    /**
+     * @brief Initializes the driver state.
+     */
     void initialize() override;
+
+    /**
+     * @brief Deinitializes the driver state.
+     */
     void deinitialize() override;
 
 };

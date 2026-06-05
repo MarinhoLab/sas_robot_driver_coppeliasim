@@ -28,12 +28,17 @@ from geometry_msgs.msg import PoseStamped
 from sas_conversions import geometry_msgs_pose_stamped_to_dq, dq_to_geometry_msgs_pose_stamped
 
 class SimROS2ObjectManager:
+    """Publishes and receives poses for a CoppeliaSim scene object."""
 
     def __init__(self,
                  object_handle: int,
                  node: Node,
                  sim):
-
+        """
+        :param object_handle: CoppeliaSim handle of the scene object.
+        :param node: rclpy Node used to create publishers and subscriptions.
+        :param sim: CoppeliaSim simulation object provided by the simulator.
+        """
         self.object_handle = object_handle
         self.object_alias = sim.getObjectAlias(object_handle, 1).replace("[", "_").replace("]", "_")
         self.sim = sim
@@ -49,9 +54,10 @@ class SimROS2ObjectManager:
             callback=self.subscriber_callback,
             qos_profile=1)
 
-        self.x = None
+        self.x = None  # Pending pose command as a unit dual quaternion, or None.
 
     def sensing_update(self):
+        """Reads the object pose from the simulator and publishes it."""
         x_cs = self.sim.getObjectPose(self.object_handle)
         t = x_cs[0]*i_ + x_cs[1]*j_ + x_cs[2]*k_
         r = (x_cs[6] + x_cs[3]*i_ + x_cs[4]*j_ + x_cs[5]*k_).normalize()
@@ -59,6 +65,7 @@ class SimROS2ObjectManager:
         self.publisher.publish(msg)
 
     def actuation_update(self):
+        """Applies a pending pose command to the simulator, then clears it."""
         if self.x is not None:
             t = vec3(translation(self.x))
             r = vec4(rotation(self.x))
@@ -68,6 +75,7 @@ class SimROS2ObjectManager:
             self.x = None # 26.03.12 - Objects won't be manipulable in the interface otherwise, even those we want to update only once.
 
     def subscriber_callback(self, msg: PoseStamped):
+        """Stores an incoming pose command for the next actuation step."""
         self.x = geometry_msgs_pose_stamped_to_dq(msg)
 
 

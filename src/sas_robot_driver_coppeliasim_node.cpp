@@ -1,20 +1,20 @@
 /*
 # Copyright (c) 2016-2025 Murilo Marques Marinho
 #
-#    This file is part of sas_robot_driver_myrobot.
+#    This file is part of sas_robot_driver_coppeliasim.
 #
-#    sas_robot_driver_myrobot is free software: you can redistribute it and/or modify
+#    sas_robot_driver_coppeliasim is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Lesser General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
 #
-#    sas_robot_driver_myrobot is distributed in the hope that it will be useful,
+#    sas_robot_driver_coppeliasim is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU Lesser General Public License for more details.
 #
 #    You should have received a copy of the GNU Lesser General Public License
-#    along with sas_robot_driver_myrobot.  If not, see <https://www.gnu.org/licenses/>.
+#    along with sas_robot_driver_coppeliasim.  If not, see <https://www.gnu.org/licenses/>.
 #
 # ################################################################
 #
@@ -22,6 +22,11 @@
 #   Based on sas_robot_driver_ur
 #
 # ################################################################*/
+
+/**
+ * @file sas_robot_driver_coppeliasim_node.cpp
+ * @brief ROS 2 node entry point for RobotDriverCoppeliaSim.
+ */
 #include <rclcpp/rclcpp.hpp>
 #include <sas_common/sas_common.hpp>
 #include <sas_core/eigen3_std_conversions.hpp>
@@ -34,11 +39,18 @@
  * *******************************************/
 #include<signal.h>
 static std::atomic_bool kill_this_process(false);
+/** @brief Sets the kill flag on SIGINT. */
 void sig_int_handler(int)
 {
     kill_this_process = true;
 }
 
+/**
+ * @brief Node entry point.
+ *
+ * Loads ROS 2 parameters, instantiates RobotDriverCoppeliaSim and
+ * RobotDriverROS, then runs the control loop until interrupted.
+ */
 int main(int argc, char** argv)
 {
     if(signal(SIGINT, sig_int_handler) == SIG_ERR)
