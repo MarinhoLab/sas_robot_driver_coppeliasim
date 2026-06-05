@@ -1,20 +1,20 @@
 /*
 # Copyright (c) 2016-2025 Murilo Marques Marinho
 #
-#    This file is part of sas_robot_driver_myrobot.
+#    This file is part of sas_robot_driver_coppeliasim.
 #
-#    sas_robot_driver_myrobot is free software: you can redistribute it and/or modify
+#    sas_robot_driver_coppeliasim is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Lesser General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
 #
-#    sas_robot_driver_myrobot is distributed in the hope that it will be useful,
+#    sas_robot_driver_coppeliasim is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU Lesser General Public License for more details.
 #
 #    You should have received a copy of the GNU Lesser General Public License
-#    along with sas_robot_driver_myrobot.  If not, see <https://www.gnu.org/licenses/>.
+#    along with sas_robot_driver_coppeliasim.  If not, see <https://www.gnu.org/licenses/>.
 #
 # ################################################################
 #
@@ -22,6 +22,11 @@
 #   Based on sas_robot_driver_ur.cpp
 #
 # ################################################################*/
+
+/**
+ * @file sas_robot_driver_coppeliasim.cpp
+ * @brief RobotDriverCoppeliaSim implementation.
+ */
 
 
 #include "sas_robot_driver_coppeliasim/sas_robot_driver_coppeliasim.hpp"
@@ -45,14 +50,11 @@ RobotDriverCoppeliaSim::~RobotDriverCoppeliaSim()
 }
 
 /**
- * @brief RobotDriverMyrobot::get_joint_positions
- * This method should always throw an exception if the user
- * tries to obtain the joint positions in an invalid state.
+ * @brief Returns current joint positions in radians.
  *
- * One useful way of defining that is with a VectorXd(), which
- * has by default size zero until it is initialized.
+ * Throws if the interface is in an invalid state (e.g., not connected).
  *
- * @return a VectorXd representing the configuration space in radians.
+ * @return Joint positions as a VectorXd.
  */
 VectorXd RobotDriverCoppeliaSim::get_joint_positions()
 {
@@ -60,10 +62,8 @@ VectorXd RobotDriverCoppeliaSim::get_joint_positions()
 }
 
 /**
- * @brief RobotDriverCoppeliaSim::set_target_joint_positions
- * Sets the joint positions and the target joint positions of the joints given in the configuration file.
- *
- * @param desired_joint_positions_rad
+ * @brief Sets joint positions and target joint positions.
+ * @param desired_joint_positions_rad Desired joint positions in radians.
  */
 void RobotDriverCoppeliaSim::set_target_joint_positions(const VectorXd &desired_joint_positions_rad)
 {
@@ -72,9 +72,9 @@ void RobotDriverCoppeliaSim::set_target_joint_positions(const VectorXd &desired_
 }
 
 /**
- * @brief RobotDriverCoppeliaSim::connect
+ * @brief Connects to the CoppeliaSim instance.
  *
- * Connect to CoppeliaSim with the necessary information given in the configuration file.
+ * Throws std::runtime_error if the connection attempt fails.
  */
 void RobotDriverCoppeliaSim::connect()
 {
@@ -87,10 +87,10 @@ void RobotDriverCoppeliaSim::connect()
 }
 
 /**
- * @brief RobotDriverCoppeliaSim::initialize
+ * @brief Initializes the driver state.
  *
- * Gets the initial joint positions state. This will guarantee that future requests make sense as long
- * as connection is still alive.
+ * Reads the initial joint positions to ensure the internal state is valid
+ * before the control loop begins.
  */
 void RobotDriverCoppeliaSim::initialize()
 {
@@ -98,8 +98,7 @@ void RobotDriverCoppeliaSim::initialize()
 }
 
 /**
- * @brief RobotDriverCoppeliaSim::deinitialize.
- * Nothing to do.
+ * @brief Deinitializes the driver state.
  */
 void RobotDriverCoppeliaSim::deinitialize()
 {
@@ -107,14 +106,21 @@ void RobotDriverCoppeliaSim::deinitialize()
 }
 
 /**
- * @brief RobotDriverCoppeliaSim::disconnect
- * Disconnects from CoppeliaSim.
+ * @brief Disconnects from the CoppeliaSim instance.
  */
 void RobotDriverCoppeliaSim::disconnect()
 {
     //Nothing to do
 }
 
+/**
+ * @brief Returns joint position limits.
+ *
+ * Joint limits are queried from the simulator when available.
+ * For cyclic joints, limits are set to the representable float range.
+ *
+ * @return Tuple of (min, max) joint position vectors in radians.
+ */
 std::tuple<VectorXd, VectorXd> RobotDriverCoppeliaSim::get_joint_limits()
 {
     //TODO: Obtain the joint limits from the simulator. This does not seem to be trivial as of now.

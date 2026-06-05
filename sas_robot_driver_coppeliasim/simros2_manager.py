@@ -29,12 +29,18 @@ from sas_common import rclcpp_init, rclcpp_Node, rclcpp_spin_some, rclcpp_shutdo
 from .simros2_node import SimROS2Node
 
 class SimROS2Manager:
+    """Manages ROS 2 lifecycle within a CoppeliaSim simulation."""
+
     def __init__(self, sim):
+        """
+        :param sim: CoppeliaSim simulation object provided by the simulator.
+        """
         self.node: Node = None
         self.rclcpp_node: rclcpp_Node = None
         self.coppeliasim_sim = sim
 
     def sys_call_init(self):
+        """Initializes rclpy, the C++ node, and the SimROS2Node."""
         try:
             if self.node is None:
                 rclpy.init(args=None)
@@ -48,16 +54,19 @@ class SimROS2Manager:
             print(f"Error initializing ROS 2: {e}")
 
     def sys_call_actuation(self):
+        """Runs the actuation update step."""
         if self.node is not None:
             self.node.actuation_update()
 
     def sys_call_sensing(self):
+        """Runs the sensing update step and spins both nodes once."""
         if self.node is not None:
             self.node.sensing_update()
             rclpy.spin_once(self.node, timeout_sec=0.0)
             rclcpp_spin_some(self.rclcpp_node)
 
     def sys_call_cleanup(self):
+        """Destroys the nodes and shuts down ROS 2."""
         if self.node is not None:
             self.node.destroy_node()
             rclpy.shutdown()

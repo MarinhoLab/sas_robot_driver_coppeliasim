@@ -28,6 +28,7 @@ import sys
 import numpy as np
 
 class SimROS2RobotManager:
+    """Publishes joint states and applies joint commands for a CoppeliaSim robot."""
 
     def __init__(self,
                  topic_prefix: str,
@@ -35,7 +36,16 @@ class SimROS2RobotManager:
                  sim,
                  robot_base_handle: int = None,
                  joint_names: list[str] = None):
+        """
+        Either ``robot_base_handle`` or ``joint_names`` must be provided, but not both.
 
+        :param topic_prefix: ROS 2 topic prefix for this robot's driver server.
+        :param rclcpp_node: C++ rclcpp node used by the RobotDriverServer.
+        :param sim: CoppeliaSim simulation object provided by the simulator.
+        :param robot_base_handle: CoppeliaSim handle of the robot base object.
+                                  All joints in the subtree are used automatically.
+        :param joint_names: Explicit list of joint names (not yet implemented).
+        """
         if robot_base_handle is None and joint_names is None:
             raise Exception('You must specify a robot_base_handle or joint_names')
         if robot_base_handle is not None and joint_names is not None:
@@ -54,14 +64,15 @@ class SimROS2RobotManager:
         self.DOF = len(self.joint_handles)
 
         self.rds = RobotDriverServer(rclcpp_node, f"/sas_robot_driver_coppeliasim{self.topic_prefix}")
-        self.q: np.array = np.zeros(self.DOF)
-        self.q_min: np.array = np.zeros(self.DOF)
-        self.q_max: np.array = np.zeros(self.DOF)
-        self.q_dot: np.array = np.zeros(self.DOF)
-        self.q_force: np.array = np.zeros(self.DOF)
-        self.q_target: np.array = None
+        self.q: np.array = np.zeros(self.DOF)        # Current joint positions (rad).
+        self.q_min: np.array = np.zeros(self.DOF)    # Joint position lower limits (rad).
+        self.q_max: np.array = np.zeros(self.DOF)    # Joint position upper limits (rad).
+        self.q_dot: np.array = np.zeros(self.DOF)    # Current joint velocities (rad/s).
+        self.q_force: np.array = np.zeros(self.DOF)  # Current joint forces/torques (N·m).
+        self.q_target: np.array = None               # Target joint positions received from the driver server.
 
     def sensing_update(self):
+        """Reads joint states from the simulator and publishes them via the driver server."""
         for i in range(self.DOF):
             self.q[i] = self.sim.getJointPosition(self.joint_handles[i])
             self.q_dot[i] = self.sim.getJointVelocity(self.joint_handles[i])
@@ -83,6 +94,7 @@ class SimROS2RobotManager:
         self.rds.send_joint_limits((self.q_min, self.q_max))
 
     def actuation_update(self):
+        """Applies target joint positions from the driver server to the simulator."""
         if self.rds.is_enabled():
             self.q_target = self.rds.get_target_joint_positions()
             if self.q_target is not None:

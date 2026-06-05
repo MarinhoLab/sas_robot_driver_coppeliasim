@@ -31,10 +31,16 @@ from .simros2_object_manager import SimROS2ObjectManager
 
 
 class SimROS2Node(Node):
+    """ROS 2 node coordinating robot and object managers."""
+
     def __init__(self,
                  rclcpp_node: rclcpp_Node,
                  sim
                  ):
+        """
+        :param rclcpp_node: Companion C++ rclcpp node.
+        :param sim: CoppeliaSim simulation object provided by the simulator.
+        """
         timestamp_for_anonymous_name = str(time.time()).replace('.', '_')
         super().__init__(f"sas_simros2_{timestamp_for_anonymous_name}_python_node")
         self.rclcpp_node: rclcpp_Node = rclcpp_node
@@ -43,18 +49,22 @@ class SimROS2Node(Node):
         self.coppeliasim_sim = sim
 
     def add_robot_manager(self, robot_manager: SimROS2RobotManager):
+        """Registers a SimROS2RobotManager with this node."""
         self.robot_managers.append(robot_manager)
 
     def add_object_manager(self, robot_manager: SimROS2ObjectManager):
+        """Registers a SimROS2ObjectManager with this node."""
         self.object_managers.append(robot_manager)
 
     def sensing_update(self):
+        """Calls sensing_update on all registered managers."""
         for robot_manager in self.robot_managers:
             robot_manager.sensing_update()
         for object_manager in self.object_managers:
             object_manager.sensing_update()
 
     def actuation_update(self):
+        """Calls actuation_update on all registered managers."""
         for robot_manager in self.robot_managers:
             robot_manager.actuation_update()
         for object_manager in self.object_managers:
