@@ -1,8 +1,8 @@
 services:
-  sas_common:
-    build: .
-    volumes:
-      - ../../sas_robot_driver_coppeliasim:/root/sas_robot_driver_coppeliasim_devel/src/sas_robot_driver_coppeliasim
+  sas_robot_driver_coppeliasim:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
     command: /bin/bash -c "
       cd /root/sas_robot_driver_coppeliasim_devel/src/
       && ls .
