@@ -4,5 +4,6 @@ SHELL ["/bin/bash", "-c"]
 ENV BASH_ENV="/etc/bash_env"
 
 RUN sudo apt-get update && sudo apt-get upgrade -y
-RUN sudo sudo apt-get remove -y ros-jazzy-sas-common
-RUN mkdir -p /root/sas_common_devel/src/
+RUN sudo sudo apt-get remove -y ros-jazzy-sas-robot-driver-coppeliasim
+RUN mkdir -p /root/sas_robot_driver_coppeliasim_devel/src/
+COPY . /root/sas_robot_driver_coppeliasim_devel/src/sas_robot_driver_coppeliasim
