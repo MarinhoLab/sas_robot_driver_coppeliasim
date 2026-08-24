@@ -126,6 +126,17 @@ install(DIRECTORY
 # Launch Block [END] #
 ######################
 
+#######################
+# Config Block [BEGIN] #
+# vvvvvvvvvvvvvvvvvvv #
+install(DIRECTORY
+  config
+  DESTINATION share/${PROJECT_NAME}/
+)
+# ^^^^^^^^^^^^^^^^^^^ #
+# Config Block [END] #
+#######################
+
 #########################
 # Scripts Block [BEGIN] #
 # vvvvvvvvvvvvvvvvvvvvv #
