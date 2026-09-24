@@ -54,9 +54,9 @@ RobotDriverCoppeliaSim::~RobotDriverCoppeliaSim()
  *
  * Throws if the interface is in an invalid state (e.g., not connected).
  *
- * @return Joint positions as a VectorXd.
+ * @return Joint positions as a Eigen::VectorXd.
  */
-VectorXd RobotDriverCoppeliaSim::get_joint_positions()
+Eigen::VectorXd RobotDriverCoppeliaSim::get_joint_positions()
 {
     return csi_->get_joint_positions(configuration_.robot_joint_names);
 }
@@ -65,7 +65,7 @@ VectorXd RobotDriverCoppeliaSim::get_joint_positions()
  * @brief Sets joint positions and target joint positions.
  * @param desired_joint_positions_rad Desired joint positions in radians.
  */
-void RobotDriverCoppeliaSim::set_target_joint_positions(const VectorXd &desired_joint_positions_rad)
+void RobotDriverCoppeliaSim::set_target_joint_positions(const Eigen::VectorXd &desired_joint_positions_rad)
 {
     csi_->set_joint_positions(configuration_.robot_joint_names, desired_joint_positions_rad);
     csi_->set_joint_target_positions(configuration_.robot_joint_names, desired_joint_positions_rad);
@@ -121,11 +121,11 @@ void RobotDriverCoppeliaSim::disconnect()
  *
  * @return Tuple of (min, max) joint position vectors in radians.
  */
-std::tuple<VectorXd, VectorXd> RobotDriverCoppeliaSim::get_joint_limits()
+std::tuple<Eigen::VectorXd, Eigen::VectorXd> RobotDriverCoppeliaSim::get_joint_limits()
 {
     //TODO: Obtain the joint limits from the simulator. This does not seem to be trivial as of now.
     int dof = get_joint_positions().size();
-    auto joint_positions_max = VectorXd::Ones(dof)*2*pi;
+    auto joint_positions_max = Eigen::VectorXd::Ones(dof)*2*pi;
     auto joint_positions_min = -joint_positions_max;
     return {joint_positions_min, joint_positions_max};
 }
