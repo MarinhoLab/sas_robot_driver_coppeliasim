@@ -36,7 +36,6 @@
 
 #include <dqrobotics/interfaces/coppeliasim/DQ_CoppeliaSimInterfaceZMQ.h>
 
-using namespace Eigen;
 
 namespace sas
 {
@@ -59,7 +58,7 @@ class RobotDriverCoppeliaSim: public RobotDriver
 {
 private:
     RobotDriverCoppeliaSimConfiguration configuration_; ///< Driver configuration.
-    VectorXd joint_positions_;                          ///< Cached joint positions.
+    Eigen::VectorXd joint_positions_;                          ///< Cached joint positions.
     std::shared_ptr<DQ_CoppeliaSimInterfaceZMQ> csi_;   ///< CoppeliaSim ZMQ interface.
 
 public:
@@ -78,21 +77,21 @@ public:
 
     /**
      * @brief Returns current joint positions in radians.
-     * @return Joint positions as a VectorXd.
+     * @return Joint positions as a Eigen::VectorXd.
      */
-    VectorXd get_joint_positions() override;
+    Eigen::VectorXd get_joint_positions() override;
 
     /**
      * @brief Sets joint positions and target joint positions.
      * @param desired_joint_positions_rad Desired joint positions in radians.
      */
-    void set_target_joint_positions(const VectorXd& desired_joint_positions_rad) override;
+    void set_target_joint_positions(const Eigen::VectorXd& desired_joint_positions_rad) override;
 
     /**
      * @brief Returns joint position limits.
      * @return Tuple of (min, max) joint position vectors.
      */
-    std::tuple<VectorXd, VectorXd> get_joint_limits() override;
+    std::tuple<Eigen::VectorXd, Eigen::VectorXd> get_joint_limits() override;
 
     /**
      * @brief Connects to the CoppeliaSim instance.
