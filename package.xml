@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name> sas_robot_driver_coppeliasim</name>
+  <name>sas_robot_driver_coppeliasim</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
   <maintainer email="murilo.marinho@manchester.ac.uk">murilo</maintainer>
@@ -13,6 +13,23 @@
   <depend>sas_core</depend>
   <depend>sas_common</depend>
   <depend>sas_robot_driver</depend>
+  <depend>eigen</depend>
+  <!-- libzmq is needed by dqrobotics-interface-coppeliasim-zmq, which is
+       linked in CMakeLists.txt. -->
+  <depend>libzmq3-dev</depend>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>sas_conversions</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+
+  <!-- dqrobotics (C++ libdqrobotics-interface-coppeliasim-zmq and the
+       `dqrobotics` Python bindings) has no rosdep key; it comes from the DQ
+       Robotics PPA and PyPI (see
+       https://github.com/marinholab/docker_recipes). -->
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
