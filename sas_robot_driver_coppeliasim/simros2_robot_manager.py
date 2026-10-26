@@ -23,7 +23,7 @@
 # #######################################################################################
 """
 from sas_common import rclcpp_Node
-from sas_robot_driver import RobotDriverServer
+from sas_robot_driver import RobotDriverServer, Functionality
 import sys
 import numpy as np
 
@@ -70,6 +70,8 @@ class SimROS2RobotManager:
         self.q_dot: np.array = np.zeros(self.DOF)    # Current joint velocities (rad/s).
         self.q_force: np.array = np.zeros(self.DOF)  # Current joint forces/torques (N·m).
         self.q_target: np.array = None               # Target joint positions received from the driver server.
+        self.q_dot_target: np.array = None           # Target joint velocities received from the driver server.
+        self._dynamic_control_mode = None            # Current sim.jointdynctrl_* mode of the dynamic joints.
 
     def sensing_update(self):
         """Reads joint states from the simulator and publishes them via the driver server."""
@@ -94,9 +96,36 @@ class SimROS2RobotManager:
         self.rds.send_joint_limits((self.q_min, self.q_max))
 
     def actuation_update(self):
-        """Applies target joint positions from the driver server to the simulator."""
-        if self.rds.is_enabled():
+        """Applies the latest joint targets from the driver server to the simulator.
+
+        The last type of target received selects the control mode: target joint positions use
+        position control and target joint velocities use velocity control. Velocity targets
+        persist until a new target is received, so send zeros or a position target to stop.
+        """
+        active = self.rds.get_currently_active_functionality()
+        if active == Functionality.PositionControl:
             self.q_target = self.rds.get_target_joint_positions()
-            if self.q_target is not None:
+            if len(self.q_target) == self.DOF:
+                self._set_dynamic_control_mode(self.sim.jointdynctrl_position)
                 for i in range(self.DOF):
                     self.sim.setJointTargetPosition(self.joint_handles[i], self.q_target[i])
+        elif active == Functionality.VelocityControl:
+            self.q_dot_target = self.rds.get_target_joint_velocities()
+            if len(self.q_dot_target) != self.DOF:
+                self.q_dot_target = np.zeros(self.DOF)  # Malformed command: stop the robot.
+            self._set_dynamic_control_mode(self.sim.jointdynctrl_velocity)
+            for i in range(self.DOF):
+                self.sim.setJointTargetVelocity(self.joint_handles[i], self.q_dot_target[i])
+
+    def _set_dynamic_control_mode(self, mode):
+        """Switches the dynamically enabled joints between position and velocity control."""
+        if mode == self._dynamic_control_mode:
+            return
+        for handle in self.joint_handles:
+            if self.sim.getJointMode(handle)[0] != self.sim.jointmode_dynamic:
+                continue
+            self.sim.setObjectInt32Param(handle, self.sim.jointintparam_dynctrlmode, mode)
+            if mode == self.sim.jointdynctrl_velocity:
+                # Lock joints with zero target velocity so that they do not drift under gravity.
+                self.sim.setObjectInt32Param(handle, self.sim.jointintparam_velocity_lock, 1)
+        self._dynamic_control_mode = mode

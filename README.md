@@ -85,3 +85,19 @@ Use the following convenience scripts for the most common functionalities.
 | `.devcontainer/sas_robot_script.py`  | Add as immediate child to the root of a serial-link robot to create a `sas::RobotDriverServer` for it. |
 
 Unusual use cases can be covered by the classes in the Python module `sas_robot_driver_coppeliasim`.
+
+### Joint position and velocity control
+
+Robots created with `.devcontainer/sas_robot_script.py` accept target joint positions (`set/target_joint_positions`) and
+target joint velocities (`set/target_joint_velocities`). The last type of target received selects the control mode of the
+dynamically enabled joints. In velocity control, joints with zero target velocity are locked so that they do not drift
+under gravity.
+
+> [!IMPORTANT]
+> Target joint velocities persist until a new target is received. To stop the robot, send zero velocities or a target
+> joint position. A target joint velocity with the wrong number of joints stops the robot, and a target joint position
+> with the wrong number of joints is ignored.
+
+```console
+ros2 topic pub -r 100 /sas_robot_driver_coppeliasim/<robot>/set/target_joint_velocities std_msgs/msg/Float64MultiArray "{data: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.2]}"
+```
