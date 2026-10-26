@@ -57,7 +57,11 @@ class SimROS2RobotManager:
         self.sim = sim
 
         if joint_names is None:
-            self.joint_handles = sim.getObjectsInTree(self.robot_base_handle, sim.sceneobject_joint)
+            # sim.sceneobject_joint is not available in CoppeliaSim 4.7, which uses sim.object_joint_type.
+            joint_type = getattr(sim, 'sceneobject_joint', None)
+            if joint_type is None:
+                joint_type = sim.object_joint_type
+            self.joint_handles = sim.getObjectsInTree(self.robot_base_handle, joint_type)
         else:
             raise Exception("Not implemented yet.")
 
