@@ -23,10 +23,14 @@
 # #######################################################################################
 """
 import time
+
 import rclpy
 from rclpy.node import Node
-from sas_common import rclcpp_init, rclcpp_Node, rclcpp_spin_some, rclcpp_shutdown
+
+from sas_common import rclcpp_init, rclcpp_Node, rclcpp_shutdown, rclcpp_spin_some
+
 from .simros2_node import SimROS2Node
+
 
 class SimROS2Manager:
     """Manages ROS 2 lifecycle within a CoppeliaSim simulation."""

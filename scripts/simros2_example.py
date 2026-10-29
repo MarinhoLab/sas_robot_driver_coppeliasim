@@ -23,8 +23,8 @@
 #
 # #######################################################################################
 """
-import rclpy
 from sas_robot_driver_coppeliasim import SimROS2Manager
+
 
 def main(args=None):
     try:

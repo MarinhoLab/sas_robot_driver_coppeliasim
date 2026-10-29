@@ -23,9 +23,11 @@
 # #######################################################################################
 """
 from dqrobotics import *
-from rclpy.node import Node
 from geometry_msgs.msg import PoseStamped
-from sas_conversions import geometry_msgs_pose_stamped_to_dq, dq_to_geometry_msgs_pose_stamped
+from rclpy.node import Node
+
+from sas_conversions import dq_to_geometry_msgs_pose_stamped, geometry_msgs_pose_stamped_to_dq
+
 
 class SimROS2ObjectManager:
     """Publishes and receives poses for a CoppeliaSim scene object."""

@@ -24,19 +24,13 @@
 # #######################################################################################
 """
 import time
-
-from math import sin, pi, cos
-
-import numpy
-from dqrobotics import *  # Despite what PyCharm might say, this is very much necessary or DQs will not be recognized
-from dqrobotics.utils.DQ_Math import deg2rad
+from math import cos, pi, sin
 
 import rclpy
+from dqrobotics import *  # Despite what PyCharm might say, this is very much necessary or DQs will not be recognized
 from rclpy.node import Node
 
-from sas_common import rclcpp_init, rclcpp_Node, rclcpp_spin_some, rclcpp_shutdown
-from sas_common import ObjectClient
-
+from sas_common import ObjectClient, rclcpp_init, rclcpp_Node, rclcpp_shutdown, rclcpp_spin_some
 from sas_core import Clock, Statistics
 
 

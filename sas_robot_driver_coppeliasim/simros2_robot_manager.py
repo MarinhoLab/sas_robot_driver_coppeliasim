@@ -22,10 +22,13 @@
 #
 # #######################################################################################
 """
-from sas_common import rclcpp_Node
-from sas_robot_driver import RobotDriverServer, Functionality
 import sys
+
 import numpy as np
+
+from sas_common import rclcpp_Node
+from sas_robot_driver import Functionality, RobotDriverServer
+
 
 class SimROS2RobotManager:
     """Publishes joint states and applies joint commands for a CoppeliaSim robot."""

@@ -23,11 +23,13 @@
 # #######################################################################################
 """
 import time
+
 from rclpy.node import Node
 
 from sas_common import rclcpp_Node
-from .simros2_robot_manager import SimROS2RobotManager
+
 from .simros2_object_manager import SimROS2ObjectManager
+from .simros2_robot_manager import SimROS2RobotManager
 
 
 class SimROS2Node(Node):
