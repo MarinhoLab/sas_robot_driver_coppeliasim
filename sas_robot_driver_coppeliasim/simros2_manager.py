@@ -48,7 +48,8 @@ class SimROS2Manager:
         """Initializes rclpy, the C++ node, and the SimROS2Node."""
         try:
             if self.node is None:
-                rclpy.init(args=None)
+                if not rclpy.ok():
+                    rclpy.init(args=None)
                 rclcpp_init()
                 timestamp_for_anonymous_name = str(time.time()).replace('.', '_')
                 self.rclcpp_node = rclcpp_Node(f"sas_simros2_{timestamp_for_anonymous_name}_cpp_node")
@@ -76,9 +77,14 @@ class SimROS2Manager:
                 print(e)
 
     def sys_call_cleanup(self):
-        """Destroys the nodes and shuts down ROS 2."""
+        """Releases the nodes and shuts down the C++ ROS 2 side."""
         if self.node is not None:
-            self.node.destroy_node()
-            rclpy.shutdown()
+            # No destroy_node()/rclpy.shutdown(): rclpy shuts the context
+            # down itself, and shutdown() would raise when Ctrl-C already
+            # brought the context down. Dropping the references lets the GC
+            # release the nodes, and clearing them lets sys_call_init
+            # re-create them on the next simulation.
+            self.node = None
+            self.rclcpp_node = None
             rclcpp_shutdown()
             print("ROS 2 shutdown requested")
