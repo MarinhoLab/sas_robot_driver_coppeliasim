@@ -29,8 +29,7 @@ from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 
 from sas_common import rclcpp_init, rclcpp_Node, rclcpp_shutdown, rclcpp_spin_some
-
-from .simros2_node import SimROS2Node
+from sas_robot_driver_coppeliasim.simros2_node import SimROS2Node
 
 
 class SimROS2Manager:
