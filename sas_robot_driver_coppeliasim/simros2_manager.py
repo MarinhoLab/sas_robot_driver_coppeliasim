@@ -25,6 +25,7 @@
 import time
 
 import rclpy
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 
 from sas_common import rclcpp_init, rclcpp_Node, rclcpp_shutdown, rclcpp_spin_some
@@ -66,8 +67,13 @@ class SimROS2Manager:
         """Runs the sensing update step and spins both nodes once."""
         if self.node is not None:
             self.node.sensing_update()
-            rclpy.spin_once(self.node, timeout_sec=0.0)
-            rclcpp_spin_some(self.rclcpp_node)
+            try:
+                rclpy.spin_once(self.node, timeout_sec=0.0)
+                rclcpp_spin_some(self.rclcpp_node)
+            except (KeyboardInterrupt, ExternalShutdownException):
+                pass
+            except Exception as e:
+                print(e)
 
     def sys_call_cleanup(self):
         """Destroys the nodes and shuts down ROS 2."""
