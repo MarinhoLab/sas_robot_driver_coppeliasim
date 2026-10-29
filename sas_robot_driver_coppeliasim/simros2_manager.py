@@ -26,7 +26,7 @@ import time
 
 import rclpy
 from rclpy.executors import ExternalShutdownException
-from rclpy.node import Node
+from rclpy.utilities import ok
 
 from sas_common import rclcpp_init, rclcpp_Node, rclcpp_shutdown, rclcpp_spin_some
 from sas_robot_driver_coppeliasim.simros2_node import SimROS2Node
@@ -35,11 +35,11 @@ from sas_robot_driver_coppeliasim.simros2_node import SimROS2Node
 class SimROS2Manager:
     """Manages ROS 2 lifecycle within a CoppeliaSim simulation."""
 
-    def __init__(self, sim):
+    def __init__(self, sim=None):
         """
         :param sim: CoppeliaSim simulation object provided by the simulator.
         """
-        self.node: Node = None
+        self.node: SimROS2Node | None = None
         self.rclcpp_node: rclcpp_Node = None
         self.coppeliasim_sim = sim
 
@@ -47,7 +47,7 @@ class SimROS2Manager:
         """Initializes rclpy, the C++ node, and the SimROS2Node."""
         try:
             if self.node is None:
-                if not rclpy.ok():
+                if not ok():
                     rclpy.init(args=None)
                 rclcpp_init()
                 timestamp_for_anonymous_name = str(time.time()).replace('.', '_')

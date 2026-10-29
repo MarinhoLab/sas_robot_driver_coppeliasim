@@ -37,8 +37,8 @@ class SimROS2RobotManager:
                  topic_prefix: str,
                  rclcpp_node: rclcpp_Node,
                  sim,
-                 robot_base_handle: int = None,
-                 joint_names: list[str] = None):
+                 robot_base_handle: int | None = None,
+                 joint_names: list[str] | None = None):
         """
         Either ``robot_base_handle`` or ``joint_names`` must be provided, but not both.
 
@@ -71,13 +71,13 @@ class SimROS2RobotManager:
         self.DOF = len(self.joint_handles)
 
         self.rds = RobotDriverServer(rclcpp_node, f"/sas_robot_driver_coppeliasim{self.topic_prefix}")
-        self.q: np.array = np.zeros(self.DOF)        # Current joint positions (rad).
-        self.q_min: np.array = np.zeros(self.DOF)    # Joint position lower limits (rad).
-        self.q_max: np.array = np.zeros(self.DOF)    # Joint position upper limits (rad).
-        self.q_dot: np.array = np.zeros(self.DOF)    # Current joint velocities (rad/s).
-        self.q_force: np.array = np.zeros(self.DOF)  # Current joint forces/torques (N·m).
-        self.q_target: np.array = None               # Target joint positions received from the driver server.
-        self.q_dot_target: np.array = None           # Target joint velocities received from the driver server.
+        self.q: np.ndarray = np.zeros(self.DOF)        # Current joint positions (rad).
+        self.q_min: np.ndarray = np.zeros(self.DOF)    # Joint position lower limits (rad).
+        self.q_max: np.ndarray = np.zeros(self.DOF)    # Joint position upper limits (rad).
+        self.q_dot: np.ndarray = np.zeros(self.DOF)    # Current joint velocities (rad/s).
+        self.q_force: np.ndarray = np.zeros(self.DOF)  # Current joint forces/torques (N·m).
+        self.q_target: np.ndarray | None = None               # Target joint positions received from the driver server.
+        self.q_dot_target: np.ndarray | None = None           # Target joint velocities received from the driver server.
         self._dynamic_control_mode = None            # Current sim.jointdynctrl_* mode of the dynamic joints.
 
     def sensing_update(self):
@@ -112,13 +112,13 @@ class SimROS2RobotManager:
         active = self.rds.get_currently_active_functionality()
         if active == Functionality.PositionControl:
             self.q_target = self.rds.get_target_joint_positions()
-            if len(self.q_target) == self.DOF:
+            if self.q_target is not None and len(self.q_target) == self.DOF:
                 self._set_dynamic_control_mode(self.sim.jointdynctrl_position)
                 for i in range(self.DOF):
                     self.sim.setJointTargetPosition(self.joint_handles[i], self.q_target[i])
         elif active == Functionality.VelocityControl:
             self.q_dot_target = self.rds.get_target_joint_velocities()
-            if len(self.q_dot_target) != self.DOF:
+            if self.q_dot_target is None or len(self.q_dot_target) != self.DOF:
                 self.q_dot_target = np.zeros(self.DOF)  # Malformed command: stop the robot.
             self._set_dynamic_control_mode(self.sim.jointdynctrl_velocity)
             for i in range(self.DOF):
