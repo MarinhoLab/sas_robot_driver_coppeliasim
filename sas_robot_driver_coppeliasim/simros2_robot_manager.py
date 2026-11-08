@@ -78,6 +78,7 @@ class SimROS2RobotManager:
         self.q_force: np.ndarray = np.zeros(self.DOF)  # Current joint forces/torques (N·m).
         self.q_target: np.ndarray | None = None               # Target joint positions received from the driver server.
         self.q_dot_target: np.ndarray | None = None           # Target joint velocities received from the driver server.
+        self.q_force_target: np.ndarray | None = None         # Target joint forces received from the driver server.
         self._dynamic_control_mode = None            # Current sim.jointdynctrl_* mode of the dynamic joints.
 
     def sensing_update(self):
@@ -123,7 +124,17 @@ class SimROS2RobotManager:
             self._set_dynamic_control_mode(self.sim.jointdynctrl_velocity)
             for i in range(self.DOF):
                 self.sim.setJointTargetVelocity(self.joint_handles[i], self.q_dot_target[i])
+        elif active == Functionality.ForceControl:
+            self.q_force_target = self.rds.get_target_joint_forces()
+            if self.q_force_target is None or len(self.q_force_target) != self.DOF:
+                self.q_force_target = np.zeros(self.DOF)#MALFORMED packet, send zeros to  collapse robot
+            self._set_dynamic_control_mode(self.sim.jointdynctrl_force)
+            for i in range(self.DOF):
+                self.sim.setJointTargetForce(self.joint_handles[i], self.q_force_target[i])
 
+
+                for i in range(self.DOF):
+                    self.sim.setJointTargetForce(self.joint_handles[i], self.q_force_target[i])
     def _set_dynamic_control_mode(self, mode):
         """Switches the dynamically enabled joints between position and velocity control."""
         if mode == self._dynamic_control_mode:
